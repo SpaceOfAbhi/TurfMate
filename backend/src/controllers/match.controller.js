@@ -147,3 +147,117 @@ export const getNearbyMatches = async (req, res) => {
 
   }
 };
+
+export const joinMatch = async (req, res) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    await client.query("BEGIN");
+
+    // Lock match row
+    const matchResult = await client.query(
+      `
+      SELECT *
+      FROM matches
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [id]
+    );
+
+    const match = matchResult.rows[0];
+
+    // Match not found
+    if (!match) {
+
+      await client.query("ROLLBACK");
+
+      return res.status(404).json({
+        success: false,
+        message: "Match not found",
+      });
+    }
+
+    // Match full
+    if (match.available_slots <= 0) {
+
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        success: false,
+        message: "No slots available",
+      });
+    }
+
+    // Already joined check
+    const existingPlayer = await client.query(
+      `
+      SELECT *
+      FROM match_players
+      WHERE user_id = $1
+      AND match_id = $2
+      `,
+      [userId, id]
+    );
+
+    if (existingPlayer.rows.length > 0) {
+
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        success: false,
+        message: "User already joined",
+      });
+    }
+
+    // Add player
+    await client.query(
+      `
+      INSERT INTO match_players (
+        user_id,
+        match_id
+      )
+      VALUES ($1,$2)
+      `,
+      [userId, id]
+    );
+
+    // Reduce slots
+    await client.query(
+      `
+      UPDATE matches
+      SET available_slots = available_slots - 1
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    await client.query("COMMIT");
+
+    res.status(200).json({
+      success: true,
+      message: "Joined match successfully",
+    });
+
+  } catch (error) {
+
+    await client.query("ROLLBACK");
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to join match",
+    });
+
+  } finally {
+
+    client.release();
+
+  }
+};
