@@ -1,4 +1,5 @@
 import pool from "../db/pool.js";
+import { getDistance } from "geolib";
 
 export const createMatch = async (req, res) => {
   const client = await pool.connect();
@@ -90,5 +91,59 @@ export const createMatch = async (req, res) => {
 
   } finally {
     client.release();
+  }
+};
+
+export const getNearbyMatches = async (req, res) => {
+  try {
+
+    const {
+      latitude,
+      longitude,
+      radius,
+    } = req.query;
+
+    // Fetch active matches
+    const result = await pool.query(`
+      SELECT * FROM matches
+      WHERE is_active = true
+      AND end_time > NOW()
+    `);
+
+    const matches = result.rows;
+
+    // Filter nearby matches
+    const nearbyMatches = matches.filter((match) => {
+
+      const distanceInMeters = getDistance(
+        {
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        },
+        {
+          latitude: Number(match.latitude),
+          longitude: Number(match.longitude),
+        }
+      );
+
+      const distanceInKm = distanceInMeters / 1000;
+
+      return distanceInKm <= Number(radius);
+    });
+
+    res.status(200).json({
+      success: true,
+      matches: nearbyMatches,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch nearby matches",
+    });
+
   }
 };
