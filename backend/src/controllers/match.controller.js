@@ -261,3 +261,70 @@ export const joinMatch = async (req, res) => {
 
   }
 };
+
+export const getMatchDetails = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const query = `
+      SELECT
+        m.*,
+
+        u.id AS creator_id,
+        u.name AS creator_name,
+        u.email AS creator_email,
+
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', p.id,
+              'name', p.name,
+              'email', p.email
+            )
+          ) FILTER (WHERE p.id IS NOT NULL),
+          '[]'
+        ) AS players
+
+      FROM matches m
+
+      JOIN users u
+      ON m.creator_id = u.id
+
+      LEFT JOIN match_players mp
+      ON m.id = mp.match_id
+
+      LEFT JOIN users p
+      ON mp.user_id = p.id
+
+      WHERE m.id = $1
+
+      GROUP BY m.id, u.id
+    `;
+
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Match not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      match: result.rows[0],
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch match details",
+    });
+
+  }
+};
