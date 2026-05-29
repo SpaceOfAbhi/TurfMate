@@ -14,7 +14,7 @@ export const createMatch = async (req, res) => {
       endTime,
       totalSlots,
       amountPerPerson,
-      
+
     } = req.body;
 
     const creatorId = req.user.userId;
@@ -107,9 +107,10 @@ export const getNearbyMatches = async (req, res) => {
 
     // Fetch active matches
     const result = await pool.query(`
-      SELECT * FROM matches
-      WHERE is_active = true
-      AND end_time > NOW()
+      SELECT *
+        FROM matches
+        WHERE start_time > NOW() + INTERVAL '5 minutes'
+        ORDER BY start_time
     `);
 
     const matches = result.rows;
@@ -157,7 +158,7 @@ export const joinMatch = async (req, res) => {
   try {
 
     const { id } = req.params;
-   const userId = req.user.userId;
+    const userId = req.user.userId;
 
     await client.query("BEGIN");
 
@@ -233,7 +234,7 @@ export const joinMatch = async (req, res) => {
     await client.query(
       `
       UPDATE matches
-      SET available_slots = available_slots - 1
+      SET available_slots = available_slots
       WHERE id = $1
       `,
       [id]
@@ -328,5 +329,363 @@ export const getMatchDetails = async (req, res) => {
       message: "Failed to fetch match details",
     });
 
+  }
+};
+
+export const getMyCreatedMatches = async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.userId;
+
+    const result =
+      await pool.query(
+        `
+        SELECT *
+        FROM matches
+        WHERE creator_id = $1
+        ORDER BY start_time DESC
+        `,
+        [userId]
+      );
+
+    res.status(200).json({
+      success: true,
+      matches: result.rows,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch matches",
+    });
+  }
+};
+
+export const getMyJoinedMatches = async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.userId;
+
+    const result =
+      await pool.query(
+        `
+       SELECT m.*
+        FROM matches m
+
+        JOIN match_players mp
+        ON m.id = mp.match_id
+
+        WHERE mp.user_id = $1
+        AND m.creator_id != $1
+
+        ORDER BY m.start_time DESC
+        `,
+        [userId]
+      );
+
+    res.status(200).json({
+      success: true,
+      matches: result.rows,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch matches",
+    });
+  }
+};
+
+export const getMatchPlayers = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const userId =
+      req.user.userId;
+
+    // Check match exists
+    const matchResult =
+      await pool.query(
+        `
+        SELECT creator_id
+        FROM matches
+        WHERE id = $1
+        `,
+        [id]
+      );
+
+    if (
+      matchResult.rows.length === 0
+    ) {
+
+      return res.status(404).json({
+        success: false,
+        message: "Match not found",
+      });
+    }
+
+    // Only creator can view players
+    if (
+      matchResult.rows[0]
+        .creator_id !== userId
+    ) {
+
+      return res.status(403).json({
+        success: false,
+        message:
+          "Not authorized",
+      });
+    }
+
+    // Get all players joined
+    const playersResult =
+      await pool.query(
+        `
+        SELECT
+          u.id,
+          u.name,
+          u.email,
+          u.location_name
+
+        FROM users u
+
+        JOIN match_players mp
+        ON mp.user_id = u.id
+
+        WHERE mp.match_id = $1
+
+        ORDER BY u.name
+        `,
+        [id]
+      );
+
+    return res.status(200).json({
+      success: true,
+      count:
+        playersResult.rows.length,
+      players:
+        playersResult.rows,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch players",
+    });
+  }
+};
+
+export const leaveMatch = async (req, res) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    const { id } = req.params;
+
+    const userId =
+      req.user.userId;
+
+    await client.query(
+      "BEGIN"
+    );
+
+    const playerResult =
+      await client.query(
+        `
+      SELECT *
+      FROM match_players
+      WHERE user_id = $1
+      AND match_id = $2
+      `,
+        [userId, id]
+      );
+
+    if (
+      playerResult.rows.length === 0
+    ) {
+
+      await client.query(
+        "ROLLBACK"
+      );
+
+      return res.status(400).json({
+        success: false,
+        message:
+          "User not in match",
+      });
+    }
+
+    await client.query(
+      `
+      DELETE FROM match_players
+      WHERE user_id = $1
+      AND match_id = $2
+      `,
+      [userId, id]
+    );
+
+    await client.query(
+      `
+      UPDATE matches
+      SET available_slots =
+      available_slots + 1
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    await client.query(
+      "COMMIT"
+    );
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Left match successfully",
+    });
+
+  } catch (error) {
+
+    await client.query(
+      "ROLLBACK"
+    );
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to leave match",
+    });
+
+  } finally {
+
+    client.release();
+  }
+};
+
+export const deleteMatch = async (
+  req,
+  res
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    const { id } = req.params;
+
+    const userId =
+      req.user.userId;
+
+    await client.query(
+      "BEGIN"
+    );
+
+    const matchResult =
+      await client.query(
+        `
+      SELECT creator_id
+      FROM matches
+      WHERE id = $1
+      `,
+        [id]
+      );
+
+    if (
+      matchResult.rows.length === 0
+    ) {
+
+      await client.query(
+        "ROLLBACK"
+      );
+
+      return res.status(404).json({
+        success: false,
+        message:
+          "Match not found",
+      });
+    }
+
+    if (
+      matchResult.rows[0]
+        .creator_id !== userId
+    ) {
+
+      await client.query(
+        "ROLLBACK"
+      );
+
+      return res.status(403).json({
+        success: false,
+        message:
+          "Not authorized",
+      });
+    }
+
+    await client.query(
+      `
+      DELETE FROM match_players
+      WHERE match_id = $1
+      `,
+      [id]
+    );
+
+    await client.query(
+      `
+      DELETE FROM matches
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    await client.query(
+      "COMMIT"
+    );
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Match deleted",
+    });
+
+  } catch (error) {
+
+    await client.query(
+      "ROLLBACK"
+    );
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to delete match",
+    });
+
+  } finally {
+
+    client.release();
   }
 };

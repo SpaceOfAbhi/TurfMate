@@ -27,6 +27,10 @@ class MatchService {
     return response.data['match'];
   }
 
+
+
+  
+
   Future<void> joinMatch({required String matchId}) async {
     await dio.post('/matches/$matchId/join');
   }
@@ -67,4 +71,60 @@ class MatchService {
       return false;
     }
   }
+
+
+
+  Future<List<dynamic>>
+getMyCreatedMatches() async {
+
+  final response =
+      await dio.get(
+    "/matches/my-created",
+  );
+
+  return response.data["matches"];
+}
+
+Future<List<dynamic>>
+getMyJoinedMatches() async {
+
+  final response =
+      await dio.get(
+    "/matches/my-joined",
+  );
+
+  return response.data["matches"];
+}
+
+
+
+Future<List<dynamic>> getMatchPlayers(
+  String matchId,
+) async {
+
+  final response = await dio.get(
+    "/matches/$matchId/players",
+  );
+
+  return response.data["players"];
+}
+
+Future<void> deleteMatch(
+  String matchId,
+) async {
+
+  await dio.delete(
+    "/matches/$matchId",
+  );
+}
+
+Future<void> leaveMatch(
+  String matchId,
+) async {
+
+  await dio.delete(
+    "/matches/$matchId/leave",
+  );
+}
+
 }
