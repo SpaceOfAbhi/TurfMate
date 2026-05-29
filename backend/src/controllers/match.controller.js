@@ -155,7 +155,7 @@ export const joinMatch = async (req, res) => {
   try {
 
     const { id } = req.params;
-    const { userId } = req.body;
+   const userId = req.user.userId;
 
     await client.query("BEGIN");
 
