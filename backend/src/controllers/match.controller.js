@@ -14,8 +14,10 @@ export const createMatch = async (req, res) => {
       endTime,
       totalSlots,
       amountPerPerson,
-      creatorId,
+      
     } = req.body;
+
+    const creatorId = req.user.userId;
 
     await client.query("BEGIN");
 
