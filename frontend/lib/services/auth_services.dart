@@ -45,7 +45,6 @@ class AuthService {
       );
 
       await _storage.write(key: "token", value: response.data["token"]);
-
       return true;
     } catch (e) {
       print(e);

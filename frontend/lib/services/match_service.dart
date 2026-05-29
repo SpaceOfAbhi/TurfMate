@@ -27,9 +27,44 @@ class MatchService {
     return response.data['match'];
   }
 
-  Future<void> joinMatch({
-    required String matchId,
-  }) async {
+  Future<void> joinMatch({required String matchId}) async {
     await dio.post('/matches/$matchId/join');
+  }
+
+  Future<bool> createMatch({
+    required String sport,
+    required String turfName,
+    required int totalSlots,
+    required double amountPerPerson,
+  }) async {
+    try {
+      await dio.post(
+        "/matches",
+
+        data: {
+          "sport": sport,
+          "turfName": turfName,
+
+          "latitude": 9.9312,
+          "longitude": 76.2673,
+
+          "startTime": DateTime.now().toIso8601String(),
+
+          "endTime": DateTime.now()
+              .add(const Duration(hours: 1))
+              .toIso8601String(),
+
+          "totalSlots": totalSlots,
+
+          "amountPerPerson": amountPerPerson,
+        },
+      );
+
+      return true;
+    } catch (e) {
+      print(e);
+
+      return false;
+    }
   }
 }

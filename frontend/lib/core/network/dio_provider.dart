@@ -15,7 +15,6 @@ void setupDio() {
       final token =
           await AuthService()
               .getToken();
-
       if (token != null) {
 
         options.headers[
