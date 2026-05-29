@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/navigation/bottom_nav.dart';
 import 'package:frontend/services/auth_services.dart';
 
-import '../../home/presentation/home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -53,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen> {
       if (success) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
         );
       } else {
         ScaffoldMessenger.of(

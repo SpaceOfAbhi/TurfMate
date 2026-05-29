@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/navigation/bottom_nav.dart';
 import 'package:frontend/services/auth_services.dart';
-import '../../home/presentation/home_screen.dart';
 import 'auth_screen.dart';
 
 class AuthWrapper extends StatefulWidget {
@@ -47,7 +47,7 @@ class _AuthWrapperState
     }
 
     return loggedIn!
-        ? const HomeScreen()
+        ? const MainNavigationScreen()
         : const AuthScreen();
   }
 }
