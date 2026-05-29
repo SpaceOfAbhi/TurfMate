@@ -333,75 +333,76 @@ export const getMatchDetails = async (req, res) => {
 
 export const getMyCreatedMatches = async (req, res) => {
 
-    try {
+  try {
 
-      const userId =
-        req.user.userId;
+    const userId =
+      req.user.userId;
 
-      const result =
-        await pool.query(
-          `
+    const result =
+      await pool.query(
+        `
         SELECT *
         FROM matches
         WHERE creator_id = $1
         ORDER BY start_time DESC
         `,
-          [userId]
-        );
+        [userId]
+      );
 
-      res.status(200).json({
-        success: true,
-        matches: result.rows,
-      });
+    res.status(200).json({
+      success: true,
+      matches: result.rows,
+    });
 
-    } catch (error) {
+  } catch (error) {
 
-      console.error(error);
+    console.error(error);
 
-      res.status(500).json({
-        success: false,
-        message:
-          "Failed to fetch matches",
-      });
-    }
-  };
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch matches",
+    });
+  }
+};
 
-  export const getMyJoinedMatches = async (req, res) => {
+export const getMyJoinedMatches = async (req, res) => {
 
-    try {
+  try {
 
-      const userId =
-          req.user.userId;
+    const userId =
+      req.user.userId;
 
-      const result =
-          await pool.query(
+    const result =
+      await pool.query(
         `
-        SELECT m.*
+       SELECT m.*
         FROM matches m
 
         JOIN match_players mp
         ON m.id = mp.match_id
 
         WHERE mp.user_id = $1
+        AND m.creator_id != $1
 
         ORDER BY m.start_time DESC
         `,
         [userId]
       );
 
-      res.status(200).json({
-        success: true,
-        matches: result.rows,
-      });
+    res.status(200).json({
+      success: true,
+      matches: result.rows,
+    });
 
-    } catch (error) {
+  } catch (error) {
 
-      console.error(error);
+    console.error(error);
 
-      res.status(500).json({
-        success: false,
-        message:
-            "Failed to fetch matches",
-      });
-    }
+    res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch matches",
+    });
+  }
 };
