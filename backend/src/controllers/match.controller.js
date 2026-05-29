@@ -14,7 +14,7 @@ export const createMatch = async (req, res) => {
       endTime,
       totalSlots,
       amountPerPerson,
-      
+
     } = req.body;
 
     const creatorId = req.user.userId;
@@ -157,7 +157,7 @@ export const joinMatch = async (req, res) => {
   try {
 
     const { id } = req.params;
-   const userId = req.user.userId;
+    const userId = req.user.userId;
 
     await client.query("BEGIN");
 
@@ -329,4 +329,79 @@ export const getMatchDetails = async (req, res) => {
     });
 
   }
+};
+
+export const getMyCreatedMatches = async (req, res) => {
+
+    try {
+
+      const userId =
+        req.user.userId;
+
+      const result =
+        await pool.query(
+          `
+        SELECT *
+        FROM matches
+        WHERE creator_id = $1
+        ORDER BY start_time DESC
+        `,
+          [userId]
+        );
+
+      res.status(200).json({
+        success: true,
+        matches: result.rows,
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message:
+          "Failed to fetch matches",
+      });
+    }
+  };
+
+  export const getMyJoinedMatches = async (req, res) => {
+
+    try {
+
+      const userId =
+          req.user.userId;
+
+      const result =
+          await pool.query(
+        `
+        SELECT m.*
+        FROM matches m
+
+        JOIN match_players mp
+        ON m.id = mp.match_id
+
+        WHERE mp.user_id = $1
+
+        ORDER BY m.start_time DESC
+        `,
+        [userId]
+      );
+
+      res.status(200).json({
+        success: true,
+        matches: result.rows,
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        success: false,
+        message:
+            "Failed to fetch matches",
+      });
+    }
 };
