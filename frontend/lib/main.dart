@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/network/dio_provider.dart';
 import 'package:frontend/features/auth/presentation/auth_wrapper.dart';
 
 
 void main() {
+  setupDio();
   runApp(const ProviderScope(child: MyApp()));
 }
 
