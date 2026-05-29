@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/features/match/presentation/players_details_screen.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
+import 'package:frontend/services/match_service.dart';
 
 class MyMatchesScreen extends ConsumerWidget {
   const MyMatchesScreen({super.key});
@@ -50,13 +51,54 @@ class CreatedMatchesTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final match = data[index];
 
-              return GestureDetector(
+              return MatchCard(
+                match: match,
+
+                isCreatedMatch: true,
+
                 onTap: () {
-                  ScaffoldMessenger.of(
+                  Navigator.push(
                     context,
-                  ).showSnackBar(const SnackBar(content: Text("Tapped")));
+                    MaterialPageRoute(
+                      builder: (_) => PlayerListScreen(matchId: match["id"]),
+                    ),
+                  );
                 },
-                child: MatchCard(match: match),
+
+                onDelete: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Delete Match?"),
+                      content: const Text("This cannot be undone."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Delete"),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm != true) return;
+                  try {
+                    await MatchService().deleteMatch(match["id"]);
+
+                    ref.invalidate(myCreatedMatchesProvider);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Match deleted")),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
+                },
               );
             },
           ),
@@ -90,7 +132,44 @@ class JoinedMatchesTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final match = data[index];
 
-              return MatchCard(match: match);
+              return MatchCard(
+                match: match,
+
+                onLeave: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Leave Match?"),
+                      content: const Text("Are you sure you want to leave this match?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Leave"),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm != true) return;
+                  try {
+                    await MatchService().leaveMatch(match["id"]);
+
+                    ref.invalidate(myJoinedMatchesProvider);
+
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text("Left match")));
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
+                },
+              );
             },
           ),
         );
@@ -103,27 +182,35 @@ class JoinedMatchesTab extends ConsumerWidget {
 
 class MatchCard extends StatelessWidget {
   final dynamic match;
+  final bool isCreatedMatch;
 
-  const MatchCard({super.key, required this.match});
+  final VoidCallback? onDelete;
+  final VoidCallback? onLeave;
+  final VoidCallback? onTap;
+
+  const MatchCard({
+    super.key,
+    required this.match,
+    this.isCreatedMatch = false,
+    this.onDelete,
+    this.onLeave,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
+      onTap: onTap,
 
-          MaterialPageRoute(
-            builder: (_) => PlayerListScreen(matchId: match["id"]),
-          ),
-        );
-      },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+
         child: Padding(
           padding: const EdgeInsets.all(16),
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
               Text(
                 match["sport"] ?? "",
@@ -150,6 +237,32 @@ class MatchCard extends StatelessWidget {
               const SizedBox(height: 8),
 
               Text(match["start_time"].toString()),
+
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+
+                children: [
+                  if (isCreatedMatch)
+                    ElevatedButton.icon(
+                      onPressed: onDelete,
+
+                      icon: const Icon(Icons.delete),
+
+                      label: const Text("Delete"),
+                    ),
+
+                  if (!isCreatedMatch)
+                    ElevatedButton.icon(
+                      onPressed: onLeave,
+
+                      icon: const Icon(Icons.logout),
+
+                      label: const Text("Leave"),
+                    ),
+                ],
+              ),
             ],
           ),
         ),

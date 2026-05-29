@@ -109,6 +109,22 @@ Future<List<dynamic>> getMatchPlayers(
   return response.data["players"];
 }
 
+Future<void> deleteMatch(
+  String matchId,
+) async {
 
+  await dio.delete(
+    "/matches/$matchId",
+  );
+}
+
+Future<void> leaveMatch(
+  String matchId,
+) async {
+
+  await dio.delete(
+    "/matches/$matchId/leave",
+  );
+}
 
 }
