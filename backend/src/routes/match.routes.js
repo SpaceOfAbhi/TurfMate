@@ -6,6 +6,7 @@ import {
   getMatchDetails,
   getMyCreatedMatches,
   getMyJoinedMatches,
+  getMatchPlayers,
 } from "../controllers/match.controller.js";
 import {
   authMiddleware,
@@ -20,6 +21,7 @@ router.get("/nearby", getNearbyMatches);
 router.post("/:id/join", authMiddleware, joinMatch);
 router.get("/my-created",authMiddleware,getMyCreatedMatches);
 router.get("/my-joined",authMiddleware,getMyJoinedMatches);
+router.get("/:id/players",authMiddleware,getMatchPlayers);
 router.get("/:id", getMatchDetails);
 
 

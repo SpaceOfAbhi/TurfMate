@@ -107,9 +107,10 @@ export const getNearbyMatches = async (req, res) => {
 
     // Fetch active matches
     const result = await pool.query(`
-      SELECT * FROM matches
-      WHERE is_active = true
-      AND end_time > NOW()
+      SELECT *
+        FROM matches
+        WHERE start_time > NOW() + INTERVAL '5 minutes'
+        ORDER BY start_time
     `);
 
     const matches = result.rows;
@@ -406,3 +407,88 @@ export const getMyJoinedMatches = async (req, res) => {
     });
   }
 };
+
+export const getMatchPlayers = async (req, res) => {
+
+    try {
+
+      const { id } = req.params;
+
+      const userId =
+        req.user.userId;
+
+      // Check match exists
+      const matchResult =
+        await pool.query(
+          `
+        SELECT creator_id
+        FROM matches
+        WHERE id = $1
+        `,
+          [id]
+        );
+
+      if (
+        matchResult.rows.length === 0
+      ) {
+
+        return res.status(404).json({
+          success: false,
+          message: "Match not found",
+        });
+      }
+
+      // Only creator can view players
+      if (
+        matchResult.rows[0]
+          .creator_id !== userId
+      ) {
+
+        return res.status(403).json({
+          success: false,
+          message:
+            "Not authorized",
+        });
+      }
+
+      // Get all players joined
+      const playersResult =
+        await pool.query(
+          `
+        SELECT
+          u.id,
+          u.name,
+          u.email,
+          u.location_name
+
+        FROM users u
+
+        JOIN match_players mp
+        ON mp.user_id = u.id
+
+        WHERE mp.match_id = $1
+
+        ORDER BY u.name
+        `,
+          [id]
+        );
+
+      return res.status(200).json({
+        success: true,
+        count:
+          playersResult.rows.length,
+        players:
+          playersResult.rows,
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to fetch players",
+      });
+    }
+  };
