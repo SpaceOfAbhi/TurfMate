@@ -45,7 +45,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
 
   Future<void> joinMatch() async {
     try {
-      await _matchService.joinMatch(matchId: widget.matchId, userId: "USER_ID");
+      await _matchService.joinMatch(matchId: widget.matchId);
 
       await fetchMatchDetails();
 
