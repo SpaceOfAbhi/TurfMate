@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/features/match/presentation/players_details_screen.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
 
 class MyMatchesScreen extends ConsumerWidget {
@@ -49,7 +50,14 @@ class CreatedMatchesTab extends ConsumerWidget {
             itemBuilder: (context, index) {
               final match = data[index];
 
-              return MatchCard(match: match);
+              return GestureDetector(
+                onTap: () {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text("Tapped")));
+                },
+                child: MatchCard(match: match),
+              );
             },
           ),
         );
@@ -100,34 +108,50 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              match["sport"] ?? "",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
 
-            const SizedBox(height: 8),
+          MaterialPageRoute(
+            builder: (_) => PlayerListScreen(matchId: match["id"]),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                match["sport"] ?? "",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
-            Text(match["turf_name"] ?? ""),
+              const SizedBox(height: 8),
 
-            const SizedBox(height: 8),
+              Text(match["turf_name"] ?? ""),
 
-            Text("Slots: ${match["available_slots"]}/${match["total_slots"]}"),
+              const SizedBox(height: 8),
 
-            const SizedBox(height: 8),
+              Text(
+                "Slots: ${match["available_slots"]}/${match["total_slots"]}",
+              ),
 
-            Text("₹${match["amount_per_person"]}"),
+              const SizedBox(height: 8),
 
-            const SizedBox(height: 8),
+              Text("₹${match["amount_per_person"]}"),
 
-            Text(match["start_time"].toString()),
-          ],
+              const SizedBox(height: 8),
+
+              Text(match["start_time"].toString()),
+            ],
+          ),
         ),
       ),
     );

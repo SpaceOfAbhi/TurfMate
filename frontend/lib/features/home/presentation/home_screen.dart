@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/features/auth/presentation/auth_screen.dart';
 import 'package:frontend/features/home/provider/home_provider.dart';
-import 'package:frontend/features/match/pesentation/create_match.dart';
-import 'package:frontend/features/match_details/pesentation/matchDetails_screen.dart';
+import 'package:frontend/features/match/presentation/match_details_screen.dart';
 import 'package:frontend/services/auth_services.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -35,18 +34,7 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateMatchScreen()),
-          );
-
-          ref.invalidate(nearbyMatchesProvider);
-        },
-
-        child: const Icon(Icons.add),
-      ),
+     
       body: matchesAsync.when(
         data: (matches) {
           return RefreshIndicator(

@@ -95,4 +95,20 @@ getMyJoinedMatches() async {
 
   return response.data["matches"];
 }
+
+
+
+Future<List<dynamic>> getMatchPlayers(
+  String matchId,
+) async {
+
+  final response = await dio.get(
+    "/matches/$matchId/players",
+  );
+
+  return response.data["players"];
+}
+
+
+
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/match/pesentation/create_match.dart';
-import 'package:frontend/features/match/pesentation/my_matches.dart';
+import 'package:frontend/features/match/presentation/create_match.dart';
+import 'package:frontend/features/match/presentation/my_matches.dart';
 
 import '../home/presentation/home_screen.dart';
 
