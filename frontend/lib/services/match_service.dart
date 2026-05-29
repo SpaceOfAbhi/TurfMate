@@ -29,8 +29,7 @@ class MatchService {
 
   Future<void> joinMatch({
     required String matchId,
-    required String userId,
   }) async {
-    await dio.post('/matches/$matchId/join', data: {"userId": userId});
+    await dio.post('/matches/$matchId/join');
   }
 }
