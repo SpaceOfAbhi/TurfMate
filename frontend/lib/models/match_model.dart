@@ -6,6 +6,7 @@ class MatchModel {
   final double longitude;
   final int availableSlots;
   final double? amountPerPerson;
+  final String locationName;
 
   MatchModel({
     required this.id,
@@ -14,6 +15,8 @@ class MatchModel {
     required this.latitude,
     required this.longitude,
     required this.availableSlots,
+    required this.locationName,
+
     this.amountPerPerson,
   });
 
@@ -25,6 +28,7 @@ class MatchModel {
       latitude: json['latitude'].toDouble(),
       longitude: json['longitude'].toDouble(),
       availableSlots: json['available_slots'],
+      locationName: json["location_name"] ?? "",
       amountPerPerson: json['amount_per_person'] != null
           ? double.parse(json['amount_per_person'].toString())
           : null,

@@ -25,8 +25,8 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  String? selectedTurfId;
   String? selectedTurfName;
-
   final durations = [60, 90, 120];
 
   int selectedDuration = 60;
@@ -77,14 +77,14 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
     final success = await matchService.createMatch(
       sport: sportController.text,
 
+      turfId: selectedTurfId!,
+
       turfName: selectedTurfName!,
 
       startTime: startTime.toIso8601String(),
-
       endTime: endTime.toIso8601String(),
 
       totalSlots: int.parse(slotsController.text),
-
       amountPerPerson: double.parse(amountController.text),
     );
 
@@ -172,6 +172,8 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
 
                     onSelected: (option) {
                       setState(() {
+                        selectedTurfId = option["id"];
+
                         selectedTurfName = option["name"];
                       });
                     },

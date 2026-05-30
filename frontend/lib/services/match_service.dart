@@ -33,6 +33,7 @@ class MatchService {
 
   Future<bool> createMatch({
     required String sport,
+    required String turfId,
     required String turfName,
     required String startTime,
     required String endTime,
@@ -45,6 +46,7 @@ class MatchService {
 
         data: {
           "sport": sport,
+          "turfId": turfId,
           "turfName": turfName,
 
           "latitude": 9.9312,
