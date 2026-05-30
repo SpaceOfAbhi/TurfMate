@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/services/match_service.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MatchDetailsScreen extends StatefulWidget {
@@ -69,7 +70,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
         'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
 
     final uri = Uri.parse(url);
-print(url);
+    print(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -109,6 +110,23 @@ print(url);
             const SizedBox(height: 8),
 
             Text('₹${match!['amount_per_person']} per player'),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'Date: ${DateFormat("dd MMM yyyy").format(DateTime.parse(match!['start_time']))}',
+            ),
+
+            const SizedBox(height: 8),
+            Text(
+              'Start time: ${DateFormat.jm().format(DateTime.parse(match!['start_time']))}',
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'End time: ${DateFormat.jm().format(DateTime.parse(match!['end_time']))}',
+            ),
 
             const SizedBox(height: 20),
 
