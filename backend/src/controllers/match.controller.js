@@ -7,7 +7,7 @@ export const createMatch = async (req, res) => {
   try {
     const {
       sport,
-      turfId,
+      turf_id,
       turfName,
       latitude,
       longitude,
@@ -26,7 +26,7 @@ export const createMatch = async (req, res) => {
     const matchQuery = `
       INSERT INTO matches (
         sport,
-        turfid,
+        turf_id,
         turf_name,
         latitude,
         longitude,
@@ -37,13 +37,13 @@ export const createMatch = async (req, res) => {
         amount_per_person,
         creator_id
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       RETURNING *
     `;
 
     const matchValues = [
       sport,
-      turfId,
+      turf_id,
       turfName,
       latitude,
       longitude,
