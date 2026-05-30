@@ -27,10 +27,6 @@ class MatchService {
     return response.data['match'];
   }
 
-
-
-  
-
   Future<void> joinMatch({required String matchId}) async {
     await dio.post('/matches/$matchId/join');
   }
@@ -38,6 +34,8 @@ class MatchService {
   Future<bool> createMatch({
     required String sport,
     required String turfName,
+    required String startTime,
+    required String endTime,
     required int totalSlots,
     required double amountPerPerson,
   }) async {
@@ -52,11 +50,9 @@ class MatchService {
           "latitude": 9.9312,
           "longitude": 76.2673,
 
-          "startTime": DateTime.now().toIso8601String(),
+          "startTime": startTime,
 
-          "endTime": DateTime.now()
-              .add(const Duration(hours: 1))
-              .toIso8601String(),
+          "endTime": endTime,
 
           "totalSlots": totalSlots,
 
@@ -72,59 +68,29 @@ class MatchService {
     }
   }
 
+  Future<List<dynamic>> getMyCreatedMatches() async {
+    final response = await dio.get("/matches/my-created");
 
+    return response.data["matches"];
+  }
 
-  Future<List<dynamic>>
-getMyCreatedMatches() async {
+  Future<List<dynamic>> getMyJoinedMatches() async {
+    final response = await dio.get("/matches/my-joined");
 
-  final response =
-      await dio.get(
-    "/matches/my-created",
-  );
+    return response.data["matches"];
+  }
 
-  return response.data["matches"];
-}
+  Future<List<dynamic>> getMatchPlayers(String matchId) async {
+    final response = await dio.get("/matches/$matchId/players");
 
-Future<List<dynamic>>
-getMyJoinedMatches() async {
+    return response.data["players"];
+  }
 
-  final response =
-      await dio.get(
-    "/matches/my-joined",
-  );
+  Future<void> deleteMatch(String matchId) async {
+    await dio.delete("/matches/$matchId");
+  }
 
-  return response.data["matches"];
-}
-
-
-
-Future<List<dynamic>> getMatchPlayers(
-  String matchId,
-) async {
-
-  final response = await dio.get(
-    "/matches/$matchId/players",
-  );
-
-  return response.data["players"];
-}
-
-Future<void> deleteMatch(
-  String matchId,
-) async {
-
-  await dio.delete(
-    "/matches/$matchId",
-  );
-}
-
-Future<void> leaveMatch(
-  String matchId,
-) async {
-
-  await dio.delete(
-    "/matches/$matchId/leave",
-  );
-}
-
+  Future<void> leaveMatch(String matchId) async {
+    await dio.delete("/matches/$matchId/leave");
+  }
 }

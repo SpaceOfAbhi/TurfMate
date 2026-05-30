@@ -47,7 +47,7 @@ export const createMatch = async (req, res) => {
       startTime,
       endTime,
       totalSlots,
-      totalSlots - 1,
+      totalSlots,
       amountPerPerson,
       creatorId,
     ];
