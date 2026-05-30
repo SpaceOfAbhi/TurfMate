@@ -1,5 +1,8 @@
 import pool from "../db/pool.js";
 import { getDistance } from "geolib";
+import { sendNotification }
+  from "../services/notification.services.js";
+
 
 export const createMatch = async (req, res) => {
   const client = await pool.connect();
@@ -237,15 +240,60 @@ export const joinMatch = async (req, res) => {
       [userId, id]
     );
 
+    const creatorResult =
+      await client.query(
+        `
+    SELECT
+      u.fcm_token,
+      u.name
+    FROM users u
+    JOIN matches m
+    ON m.creator_id = u.id
+    WHERE m.id = $1
+    `,
+        [id]
+      );
+
+
+    const playerResult =
+      await client.query(
+        `
+    SELECT name
+    FROM users
+    WHERE id = $1
+    `,
+        [userId]
+      );
     // Reduce slots
     await client.query(
       `
       UPDATE matches
-      SET available_slots = available_slots
+      SET available_slots = available_slots-1
       WHERE id = $1
       `,
       [id]
     );
+
+    const creator =
+      creatorResult.rows[0];
+
+    const player =
+      playerResult.rows[0];
+
+    if (
+      creator?.fcm_token &&
+      match.creator_id !== userId
+    ) {
+
+      await sendNotification(
+
+        creator.fcm_token,
+
+        "⚽ New Player Joined",
+
+        `${player.name} joined your match`
+      );
+    }
 
     await client.query("COMMIT");
 

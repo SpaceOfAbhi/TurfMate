@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/navigation/bottom_nav.dart';
 import 'package:frontend/services/auth_services.dart';
 import 'package:frontend/services/location_services.dart';
+import 'package:frontend/services/notification_services.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -42,6 +43,9 @@ class _AuthScreenState extends State<AuthScreen> {
           email: emailController.text.trim(),
           password: passwordController.text,
         );
+        if (success) {
+          await NotificationService().saveFcmToken();
+        }
       } else {
         if (locationController.text.trim().isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -63,6 +67,11 @@ class _AuthScreenState extends State<AuthScreen> {
           longitude: longitude!,
           locationName: locationController.text.trim(),
         );
+
+        if (success) {
+  await NotificationService()
+      .saveFcmToken();
+}
       }
 
       if (!mounted) return;
