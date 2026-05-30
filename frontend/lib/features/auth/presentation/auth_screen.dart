@@ -21,6 +21,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final emailController = TextEditingController();
 
   final passwordController = TextEditingController();
+  final locationController = TextEditingController();
+
   double? latitude;
   double? longitude;
   String? locationName;
@@ -41,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen> {
           password: passwordController.text,
         );
       } else {
-        if (latitude == null || longitude == null || locationName == null) {
+        if (locationController.text.trim().isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Please select your location")),
           );
@@ -59,7 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
           latitude: latitude!,
           longitude: longitude!,
-          locationName: locationName!,
+          locationName: locationController.text.trim(),
         );
       }
 
@@ -89,6 +91,7 @@ class _AuthScreenState extends State<AuthScreen> {
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    locationController.dispose();
 
     super.dispose();
   }
@@ -144,51 +147,61 @@ class _AuthScreenState extends State<AuthScreen> {
             if (!isLogin) const SizedBox(height: 16),
 
             if (!isLogin)
-              ElevatedButton.icon(
-                onPressed: () async {
-                  try {
-                    setState(() {
-                      isFetchingLocation = true;
-                    });
+              TextField(
+                controller: locationController,
 
-                    final location = await LocationService()
-                        .getCurrentLocation();
+                decoration: InputDecoration(
+                  labelText: "Location",
+                  border: const OutlineInputBorder(),
 
-                    setState(() {
-                      latitude = location["latitude"];
+                  suffixIcon: IconButton(
+                    icon: isFetchingLocation
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.my_location),
 
-                      longitude = location["longitude"];
+                    onPressed: () async {
+                      try {
+                        setState(() {
+                          isFetchingLocation = true;
+                        });
 
-                      locationName = location["locationName"];
+                        final location = await LocationService()
+                            .getCurrentLocation();
 
-                      isFetchingLocation = false;
-                    });
-                  } catch (e) {
-                    setState(() {
-                      isFetchingLocation = false;
-                    });
+                        setState(() {
+                          latitude = location["latitude"];
 
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(e.toString())));
-                  }
+                          longitude = location["longitude"];
+
+                          locationName = location["locationName"];
+
+                          locationController.text = locationName!;
+
+                          isFetchingLocation = false;
+                        });
+                      } catch (e) {
+                        setState(() {
+                          isFetchingLocation = false;
+                        });
+
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
+                  ),
+                ),
+
+                onChanged: (value) {
+                  locationName = value;
+
+                  latitude = null;
+                  longitude = null;
                 },
-
-                icon: const Icon(Icons.location_on),
-
-                label: Text(
-                  isFetchingLocation ? "Fetching..." : "Use Current Location",
-                ),
-              ),
-
-            if (locationName != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-
-                child: Text(
-                  "📍 $locationName",
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
               ),
 
             const SizedBox(height: 24),

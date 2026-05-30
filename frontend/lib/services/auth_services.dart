@@ -8,8 +8,8 @@ class AuthService {
     required String name,
     required String email,
     required String password,
-    required double latitude,
-    required double longitude,
+    double? latitude,
+    double? longitude,
     required String locationName,
   }) async {
     try {
