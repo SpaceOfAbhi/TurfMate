@@ -1,10 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/network/dio_provider.dart';
 import 'package:frontend/features/auth/presentation/auth_wrapper.dart';
+import 'package:frontend/firebase_options.dart';
+import 'package:frontend/services/notification_services.dart';
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+ await NotificationService().init();
+
   setupDio();
   runApp(const ProviderScope(child: MyApp()));
 }
