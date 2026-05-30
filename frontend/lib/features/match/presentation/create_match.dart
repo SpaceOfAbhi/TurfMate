@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/features/turf/providers/turf_provider.dart';
 
 import '../../../services/match_service.dart';
 
-class CreateMatchScreen extends StatefulWidget {
+class CreateMatchScreen extends ConsumerStatefulWidget {
   const CreateMatchScreen({super.key});
 
   @override
-  State<CreateMatchScreen> createState() => _CreateMatchScreenState();
+  ConsumerState<CreateMatchScreen> createState() => _CreateMatchScreenState();
 }
 
-class _CreateMatchScreenState extends State<CreateMatchScreen> {
+class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final sportController = TextEditingController();
-
-  final turfController = TextEditingController();
-
   final slotsController = TextEditingController();
 
   final amountController = TextEditingController();
@@ -26,7 +25,8 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-
+  String? selectedturf_id;
+  String? selectedTurfName;
   final durations = [60, 90, 120];
 
   int selectedDuration = 60;
@@ -66,18 +66,25 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
     );
 
     final endTime = startTime.add(Duration(minutes: selectedDuration));
+    if (selectedTurfName == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Select a turf")));
+
+      return;
+    }
 
     final success = await matchService.createMatch(
       sport: sportController.text,
 
-      turfName: turfController.text,
+      turf_id: selectedturf_id!,
+
+      turfName: selectedTurfName!,
 
       startTime: startTime.toIso8601String(),
-
       endTime: endTime.toIso8601String(),
 
       totalSlots: int.parse(slotsController.text),
-
       amountPerPerson: double.parse(amountController.text),
     );
 
@@ -93,7 +100,6 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
       ).showSnackBar(const SnackBar(content: Text("Match Created")));
 
       sportController.clear();
-      turfController.clear();
       slotsController.clear();
       amountController.clear();
     } else {
@@ -106,7 +112,6 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
   @override
   void dispose() {
     sportController.dispose();
-    turfController.dispose();
     slotsController.dispose();
     amountController.dispose();
     dateController.dispose();
@@ -117,6 +122,7 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final turfs = ref.watch(turfsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text("Create Match")),
 
@@ -144,18 +150,59 @@ class _CreateMatchScreenState extends State<CreateMatchScreen> {
 
               const SizedBox(height: 16),
 
-              TextFormField(
-                controller: turfController,
+              turfs.when(
+                data: (data) {
+                  final turfList = data.cast<Map<String, dynamic>>();
 
-                decoration: const InputDecoration(labelText: "Turf Name"),
+                  return Autocomplete<Map<String, dynamic>>(
+                    optionsBuilder: (TextEditingValue textEditingValue) {
+                      if (textEditingValue.text.isEmpty) {
+                        return turfList;
+                      }
 
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter turf name";
-                  }
+                      return turfList.where((turf) {
+                        return turf["name"].toString().toLowerCase().contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                      });
+                    },
 
-                  return null;
+                    displayStringForOption: (option) =>
+                        "${option["name"]} (${option["location_name"]})",
+
+                    onSelected: (option) {
+                      setState(() {
+                        selectedturf_id = option["id"];
+
+                        selectedTurfName = option["name"];
+                      });
+                    },
+
+                    fieldViewBuilder:
+                        (context, controller, focusNode, onEditingComplete) {
+                          return TextFormField(
+                            controller: controller,
+                            focusNode: focusNode,
+                            validator: (_) {
+                              if (selectedTurfName == null) {
+                                return "Select a turf";
+                              }
+
+                              return null;
+                            },
+
+                            decoration: const InputDecoration(
+                              labelText: "Search Turf",
+                              border: OutlineInputBorder(),
+                            ),
+                          );
+                        },
+                  );
                 },
+
+                loading: () => const CircularProgressIndicator(),
+
+                error: (_, __) => const Text("Failed to load turfs"),
               ),
 
               const SizedBox(height: 16),

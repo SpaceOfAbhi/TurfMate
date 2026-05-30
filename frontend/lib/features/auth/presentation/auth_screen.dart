@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/navigation/bottom_nav.dart';
 import 'package:frontend/services/auth_services.dart';
-
+import 'package:frontend/services/location_services.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -21,6 +21,13 @@ class _AuthScreenState extends State<AuthScreen> {
   final emailController = TextEditingController();
 
   final passwordController = TextEditingController();
+  final locationController = TextEditingController();
+
+  double? latitude;
+  double? longitude;
+  String? locationName;
+
+  bool isFetchingLocation = false;
 
   Future<void> submit() async {
     setState(() {
@@ -36,15 +43,25 @@ class _AuthScreenState extends State<AuthScreen> {
           password: passwordController.text,
         );
       } else {
+        if (locationController.text.trim().isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Please select your location")),
+          );
+
+          setState(() {
+            isLoading = false;
+          });
+
+          return;
+        }
         success = await authService.signup(
           name: nameController.text.trim(),
           email: emailController.text.trim(),
           password: passwordController.text,
 
-          // Temporary values
-          latitude: 9.9312,
-          longitude: 76.2673,
-          locationName: "Kochi",
+          latitude: latitude!,
+          longitude: longitude!,
+          locationName: locationController.text.trim(),
         );
       }
 
@@ -74,6 +91,7 @@ class _AuthScreenState extends State<AuthScreen> {
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    locationController.dispose();
 
     super.dispose();
   }
@@ -125,6 +143,66 @@ class _AuthScreenState extends State<AuthScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
+
+            if (!isLogin) const SizedBox(height: 16),
+
+            if (!isLogin)
+              TextField(
+                controller: locationController,
+
+                decoration: InputDecoration(
+                  labelText: "Location",
+                  border: const OutlineInputBorder(),
+
+                  suffixIcon: IconButton(
+                    icon: isFetchingLocation
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.my_location),
+
+                    onPressed: () async {
+                      try {
+                        setState(() {
+                          isFetchingLocation = true;
+                        });
+
+                        final location = await LocationService()
+                            .getCurrentLocation();
+
+                        setState(() {
+                          latitude = location["latitude"];
+
+                          longitude = location["longitude"];
+
+                          locationName = location["locationName"];
+
+                          locationController.text = locationName!;
+
+                          isFetchingLocation = false;
+                        });
+                      } catch (e) {
+                        setState(() {
+                          isFetchingLocation = false;
+                        });
+
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
+                  ),
+                ),
+
+                onChanged: (value) {
+                  locationName = value;
+
+                  latitude = null;
+                  longitude = null;
+                },
+              ),
 
             const SizedBox(height: 24),
 

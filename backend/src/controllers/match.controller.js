@@ -7,6 +7,7 @@ export const createMatch = async (req, res) => {
   try {
     const {
       sport,
+      turf_id,
       turfName,
       latitude,
       longitude,
@@ -25,6 +26,7 @@ export const createMatch = async (req, res) => {
     const matchQuery = `
       INSERT INTO matches (
         sport,
+        turf_id,
         turf_name,
         latitude,
         longitude,
@@ -35,12 +37,13 @@ export const createMatch = async (req, res) => {
         amount_per_person,
         creator_id
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
       RETURNING *
     `;
 
     const matchValues = [
       sport,
+      turf_id,
       turfName,
       latitude,
       longitude,
@@ -107,10 +110,14 @@ export const getNearbyMatches = async (req, res) => {
 
     // Fetch active matches
     const result = await pool.query(`
-      SELECT *
-        FROM matches
-        WHERE start_time > NOW() + INTERVAL '5 minutes'
-        ORDER BY start_time
+      SELECT
+    m.*,
+    t.location_name
+    FROM matches m
+    LEFT JOIN turfs t
+    ON m.turf_id = t.id
+    WHERE m.start_time > NOW() + INTERVAL '5 minutes'
+    ORDER BY m.start_time
     `);
 
     const matches = result.rows;
@@ -342,10 +349,14 @@ export const getMyCreatedMatches = async (req, res) => {
     const result =
       await pool.query(
         `
-        SELECT *
-        FROM matches
-        WHERE creator_id = $1
-        ORDER BY start_time DESC
+        SELECT
+    m.*,
+    t.location_name
+    FROM matches m
+    LEFT JOIN turfs t
+    ON m.turf_id = t.id
+    WHERE m.creator_id = $1
+    ORDER BY m.start_time DESC
         `,
         [userId]
       );
@@ -377,16 +388,16 @@ export const getMyJoinedMatches = async (req, res) => {
     const result =
       await pool.query(
         `
-       SELECT m.*
-        FROM matches m
-
-        JOIN match_players mp
-        ON m.id = mp.match_id
-
-        WHERE mp.user_id = $1
-        AND m.creator_id != $1
-
-        ORDER BY m.start_time DESC
+      SELECT
+    m.*,
+    t.location_name
+    FROM matches m
+    JOIN match_players mp
+    ON mp.match_id = m.id
+    LEFT JOIN turfs t
+    ON m.turf_id = t.id
+    WHERE mp.user_id = $1
+    ORDER BY m.start_time DESC
         `,
         [userId]
       );

@@ -58,7 +58,9 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                     title: Text(match.sport),
-                    subtitle: Text(match.turfName),
+                    subtitle: Text(
+  "${match.turfName}\n${match.locationName}",
+),
                     trailing: Text('${match.availableSlots} slots'),
                   ),
                 );
