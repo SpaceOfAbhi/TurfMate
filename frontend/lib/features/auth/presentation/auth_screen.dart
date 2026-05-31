@@ -3,6 +3,7 @@ import 'package:frontend/features/navigation/bottom_nav.dart';
 import 'package:frontend/services/auth_services.dart';
 import 'package:frontend/services/location_services.dart';
 import 'package:frontend/services/notification_services.dart';
+import 'package:geocoding/geocoding.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -44,7 +45,16 @@ class _AuthScreenState extends State<AuthScreen> {
           password: passwordController.text,
         );
         if (success) {
-          await NotificationService().saveFcmToken();
+          try {
+            await NotificationService().saveFcmToken();
+          } catch (e) {
+            print("Error saving FCM token: $e");
+          }
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+          );
         }
       } else {
         if (locationController.text.trim().isEmpty) {
@@ -58,30 +68,42 @@ class _AuthScreenState extends State<AuthScreen> {
 
           return;
         }
+        try {
+          List<Location> locations = await locationFromAddress(
+            locationController.text.trim(),
+          );
+
+          latitude = locations.first.latitude;
+          longitude = locations.first.longitude;
+        } catch (e) {
+          ScaffoldMessenger.of(
+            // ignore: use_build_context_synchronously
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Invalid location")));
+        }
         success = await authService.signup(
           name: nameController.text.trim(),
           email: emailController.text.trim(),
           password: passwordController.text,
 
-          latitude: latitude!,
-          longitude: longitude!,
+          latitude: latitude,
+          longitude: longitude,
           locationName: locationController.text.trim(),
         );
-
-        if (success) {
-  await NotificationService()
-      .saveFcmToken();
-}
       }
-
-      if (!mounted) return;
-
       if (success) {
+        try {
+          await NotificationService().saveFcmToken();
+        } catch (e) {
+          print("Error saving FCM token: $e");
+        }
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
         );
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text("Authentication Failed")));

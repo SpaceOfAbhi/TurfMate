@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../core/network/dio_provider.dart';
 
@@ -30,7 +31,12 @@ class AuthService {
 
       return true;
     } catch (e) {
-      print(e);
+      print("SIGNUP ERROR: $e");
+
+      if (e is DioException) {
+        print("STATUS: ${e.response?.statusCode}");
+        print("DATA: ${e.response?.data}");
+      }
 
       return false;
     }
