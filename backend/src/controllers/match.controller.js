@@ -12,8 +12,6 @@ export const createMatch = async (req, res) => {
       sport,
       turf_id,
       turfName,
-      latitude,
-      longitude,
       startTime,
       endTime,
       totalSlots,
@@ -24,6 +22,21 @@ export const createMatch = async (req, res) => {
     const creatorId = req.user.userId;
 
     await client.query("BEGIN");
+
+    const turfResult = await pool.query(
+      `
+  SELECT latitude, longitude
+  FROM turfs
+  WHERE id = $1
+  `,
+      [turf_id]
+    );
+
+    const latitude =
+      turfResult.rows[0].latitude;
+
+    const longitude =
+      turfResult.rows[0].longitude;
 
     // Create match
     const matchQuery = `
@@ -774,11 +787,17 @@ export const deleteMatch = async (
       [id]
     );
 
-    await sendNotification(
-      player.fcm_token,
-      "⚠️ Match Cancelled",
-      `${sport} match has been cancelled`
-    );
+    for (const player of playersResult.rows) {
+
+      if (!player.fcm_token) continue;
+
+      await sendNotification(
+        player.fcm_token,
+        "⚠️ Match Cancelled",
+        `${player.name}'s match has been cancelled`
+      );
+
+    }
 
     await client.query(
       "COMMIT"

@@ -63,18 +63,18 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
   }
 
   Future<void> openGoogleMaps() async {
-    final latitude = match!['latitude'];
-    final longitude = match!['longitude'];
+  final latitude = match!['latitude'];
+  final longitude = match!['longitude'];
 
-    final url =
-        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+  final uri = Uri.parse(
+    'google.navigation:q=$latitude,$longitude',
+  );
 
-    final uri = Uri.parse(url);
-    print(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
+  await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication,
+  );
+}
 
   @override
   Widget build(BuildContext context) {
