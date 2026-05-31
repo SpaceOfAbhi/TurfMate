@@ -66,7 +66,7 @@ class HomeScreen extends ConsumerWidget {
         data: (matches) {
           return RefreshIndicator(
             onRefresh: () async {
-              ref.invalidate(nearbyMatchesProvider);
+              ref.refresh(nearbyMatchesProvider);
             },
             child: ListView.builder(
               itemCount: matches.length,

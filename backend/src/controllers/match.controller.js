@@ -794,7 +794,7 @@ export const deleteMatch = async (
       await sendNotification(
         player.fcm_token,
         "⚠️ Match Cancelled",
-        `${player.name}'s match has been cancelled`
+        `${player.name}" match has been cancelled`
       );
 
     }
