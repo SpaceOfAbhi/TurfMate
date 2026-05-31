@@ -240,7 +240,15 @@ export const joinMatch = async (req, res) => {
         message: "User already joined",
       });
     }
+    if (match.creator_id === userId) {
 
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        success: false,
+        message: "Match creator cannot join their own match",
+      });
+    }
     // Add player
     await client.query(
       `
@@ -590,6 +598,14 @@ export const leaveMatch = async (req, res) => {
 
     const creatorId =
       creatorResult.rows[0]?.creator_id;
+
+    if (creatorId === userId) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Match creator cannot leave their own match",
+      });
+    }
 
 
     const tokenResult = await client.query(
