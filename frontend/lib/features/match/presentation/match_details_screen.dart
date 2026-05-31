@@ -157,7 +157,9 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
               width: double.infinity,
 
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: ()async {
+                  await joinMatch();
+                },
 
                 child: const Text('Join Match'),
               ),
