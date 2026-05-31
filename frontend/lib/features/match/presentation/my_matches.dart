@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/features/match/presentation/players_details_screen.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
 import 'package:frontend/services/match_service.dart';
@@ -11,18 +12,22 @@ class MyMatchesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("My Matches"),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: "Created"),
-              Tab(text: "Joined"),
-            ],
+      child: AppBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+             backgroundColor: Colors.transparent,
+            title: const Text("My Matches"),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: "Created"),
+                Tab(text: "Joined"),
+              ],
+            ),
           ),
-        ),
-        body: const TabBarView(
-          children: [CreatedMatchesTab(), JoinedMatchesTab()],
+          body: const TabBarView(
+            children: [CreatedMatchesTab(), JoinedMatchesTab()],
+          ),
         ),
       ),
     );

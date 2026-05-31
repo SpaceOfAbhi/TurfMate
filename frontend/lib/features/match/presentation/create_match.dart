@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/features/turf/providers/turf_provider.dart';
 
 import '../../../services/match_service.dart';
@@ -123,228 +124,231 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
   @override
   Widget build(BuildContext context) {
     final turfs = ref.watch(turfsProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text("Create Match")),
-
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Form(
-          key: _formKey,
-
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: sportController,
-            
-                  decoration: const InputDecoration(labelText: "Sport"),
-            
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter sport";
-                    }
-            
-                    return null;
-                  },
-                ),
-            
-                const SizedBox(height: 16),
-            
-                turfs.when(
-                  data: (data) {
-                    final turfList = data.cast<Map<String, dynamic>>();
-            
-                    return Autocomplete<Map<String, dynamic>>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text.isEmpty) {
-                          return turfList;
-                        }
-            
-                        return turfList.where((turf) {
-                          return turf["name"].toString().toLowerCase().contains(
-                            textEditingValue.text.toLowerCase(),
-                          );
-                        });
-                      },
-            
-                      displayStringForOption: (option) =>
-                          "${option["name"]} (${option["location_name"]})",
-            
-                      onSelected: (option) {
-                        setState(() {
-                          selectedturf_id = option["id"];
-            
-                          selectedTurfName = option["name"];
-                        });
-                      },
-            
-                      fieldViewBuilder:
-                          (context, controller, focusNode, onEditingComplete) {
-                            return TextFormField(
-                              controller: controller,
-                              focusNode: focusNode,
-                              validator: (_) {
-                                if (selectedTurfName == null) {
-                                  return "Select a turf";
-                                }
-            
-                                return null;
-                              },
-            
-                              decoration: const InputDecoration(
-                                labelText: "Search Turf",
-                                border: OutlineInputBorder(),
-                              ),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(title: const Text("Create Match"),backgroundColor: Colors.transparent),
+      
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+      
+          child: Form(
+            key: _formKey,
+      
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: sportController,
+              
+                    decoration: const InputDecoration(labelText: "Sport"),
+              
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter sport";
+                      }
+              
+                      return null;
+                    },
+                  ),
+              
+                  const SizedBox(height: 16),
+              
+                  turfs.when(
+                    data: (data) {
+                      final turfList = data.cast<Map<String, dynamic>>();
+              
+                      return Autocomplete<Map<String, dynamic>>(
+                        optionsBuilder: (TextEditingValue textEditingValue) {
+                          if (textEditingValue.text.isEmpty) {
+                            return turfList;
+                          }
+              
+                          return turfList.where((turf) {
+                            return turf["name"].toString().toLowerCase().contains(
+                              textEditingValue.text.toLowerCase(),
                             );
-                          },
-                    );
-                  },
-            
-                  loading: () => const CircularProgressIndicator(),
-            
-                  error: (_, __) => const Text("Failed to load turfs"),
-                ),
-            
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: dateController,
-                  readOnly: true,
-            
-                  decoration: const InputDecoration(
-                    //  labelText: "Match Date",
-                    hintText: "Select Match Date",
-                    prefixIcon: Icon(Icons.calendar_today),
+                          });
+                        },
+              
+                        displayStringForOption: (option) =>
+                            "${option["name"]} (${option["location_name"]})",
+              
+                        onSelected: (option) {
+                          setState(() {
+                            selectedturf_id = option["id"];
+              
+                            selectedTurfName = option["name"];
+                          });
+                        },
+              
+                        fieldViewBuilder:
+                            (context, controller, focusNode, onEditingComplete) {
+                              return TextFormField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                validator: (_) {
+                                  if (selectedTurfName == null) {
+                                    return "Select a turf";
+                                  }
+              
+                                  return null;
+                                },
+              
+                                decoration: const InputDecoration(
+                                  labelText: "Search Turf",
+                                  border: OutlineInputBorder(),
+                                ),
+                              );
+                            },
+                      );
+                    },
+              
+                    loading: () => const CircularProgressIndicator(),
+              
+                    error: (_, __) => const Text("Failed to load turfs"),
                   ),
-            
-                  onTap: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 60)),
-                      initialDate: DateTime.now(),
-                    );
-            
-                    if (date != null) {
-                      selectedDate = date;
-            
-                      dateController.text =
-                          "${date.day}/${date.month}/${date.year}";
-                    }
-                  },
-            
-                  validator: (_) {
-                    if (selectedDate == null) {
-                      return "Select a date";
-                    }
-            
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: timeController,
-                  readOnly: true,
-            
-                  decoration: const InputDecoration(
-                    labelText: "Start Time",
-                    prefixIcon: Icon(Icons.access_time),
+              
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: dateController,
+                    readOnly: true,
+              
+                    decoration: const InputDecoration(
+                      //  labelText: "Match Date",
+                      hintText: "Select Match Date",
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+              
+                    onTap: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 60)),
+                        initialDate: DateTime.now(),
+                      );
+              
+                      if (date != null) {
+                        selectedDate = date;
+              
+                        dateController.text =
+                            "${date.day}/${date.month}/${date.year}";
+                      }
+                    },
+              
+                    validator: (_) {
+                      if (selectedDate == null) {
+                        return "Select a date";
+                      }
+              
+                      return null;
+                    },
                   ),
-            
-                  onTap: () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    );
-            
-                    if (time != null) {
-                      selectedTime = time;
-            
-                      timeController.text = time.format(context);
-                    }
-                  },
-            
-                  validator: (_) {
-                    if (selectedTime == null) {
-                      return "Select a time";
-                    }
-            
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-            
-                DropdownButtonFormField<int>(
-                  value: selectedDuration,
-            
-                  decoration: const InputDecoration(labelText: "Duration"),
-            
-                  items: const [
-                    DropdownMenuItem(value: 60, child: Text("1 Hour")),
-            
-                    DropdownMenuItem(value: 90, child: Text("1.5 Hours")),
-            
-                    DropdownMenuItem(value: 120, child: Text("2 Hours")),
-                  ],
-            
-                  onChanged: (value) {
-                    setState(() {
-                      selectedDuration = value!;
-                    });
-                  },
-                ),
-            
-                const SizedBox(height: 16),
-            
-                TextFormField(
-                  controller: slotsController,
-            
-                  keyboardType: TextInputType.number,
-            
-                  decoration: const InputDecoration(labelText: "Total Slots"),
-            
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter slots";
-                    }
-            
-                    return null;
-                  },
-                ),
-            
-                const SizedBox(height: 16),
-            
-                TextFormField(
-                  controller: amountController,
-            
-                  keyboardType: TextInputType.number,
-            
-                  decoration: const InputDecoration(
-                    labelText: "Amount Per Person",
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: timeController,
+                    readOnly: true,
+              
+                    decoration: const InputDecoration(
+                      labelText: "Start Time",
+                      prefixIcon: Icon(Icons.access_time),
+                    ),
+              
+                    onTap: () async {
+                      final time = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+              
+                      if (time != null) {
+                        selectedTime = time;
+              
+                        timeController.text = time.format(context);
+                      }
+                    },
+              
+                    validator: (_) {
+                      if (selectedTime == null) {
+                        return "Select a time";
+                      }
+              
+                      return null;
+                    },
                   ),
-            
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Enter amount";
-                    }
-            
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-            
-                SizedBox(
-                  width: double.infinity,
-            
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : createMatch,
-            
-                    child: isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text("Create Match"),
+                  const SizedBox(height: 16),
+              
+                  DropdownButtonFormField<int>(
+                    value: selectedDuration,
+              
+                    decoration: const InputDecoration(labelText: "Duration"),
+              
+                    items: const [
+                      DropdownMenuItem(value: 60, child: Text("1 Hour")),
+              
+                      DropdownMenuItem(value: 90, child: Text("1.5 Hours")),
+              
+                      DropdownMenuItem(value: 120, child: Text("2 Hours")),
+                    ],
+              
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDuration = value!;
+                      });
+                    },
                   ),
-                ),
-              ],
+              
+                  const SizedBox(height: 16),
+              
+                  TextFormField(
+                    controller: slotsController,
+              
+                    keyboardType: TextInputType.number,
+              
+                    decoration: const InputDecoration(labelText: "Total Slots"),
+              
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter slots";
+                      }
+              
+                      return null;
+                    },
+                  ),
+              
+                  const SizedBox(height: 16),
+              
+                  TextFormField(
+                    controller: amountController,
+              
+                    keyboardType: TextInputType.number,
+              
+                    decoration: const InputDecoration(
+                      labelText: "Amount Per Person",
+                    ),
+              
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter amount";
+                      }
+              
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+              
+                  SizedBox(
+                    width: double.infinity,
+              
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : createMatch,
+              
+                      child: isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text("Create Match"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
