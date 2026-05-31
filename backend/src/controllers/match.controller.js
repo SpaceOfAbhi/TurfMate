@@ -284,7 +284,8 @@ export const joinMatch = async (req, res) => {
       creator?.fcm_token &&
       match.creator_id !== userId
     ) {
-
+      console.log("SENDING NOTIFICATION");
+      console.log("TOKEN:", creator?.fcm_token);
       await sendNotification(
 
         creator.fcm_token,
@@ -293,6 +294,7 @@ export const joinMatch = async (req, res) => {
 
         `${player.name} joined your match`
       );
+      console.log("NOTIFICATION SENT");
     }
 
     await client.query("COMMIT");
@@ -564,6 +566,32 @@ export const leaveMatch = async (req, res) => {
     const userId =
       req.user.userId;
 
+    const creatorResult = await client.query(
+      `
+        SELECT creator_id
+        FROM matches
+        WHERE id = $1
+  `,
+      [id]
+    );
+
+    const creatorId =
+      creatorResult.rows[0]?.creator_id;
+
+
+    const tokenResult = await client.query(
+      `
+      SELECT fcm_token
+      FROM users
+      WHERE id = $1
+  `,
+      [creatorId]
+    );
+
+    const creatorToken =
+      tokenResult.rows[0]?.fcm_token;
+
+
     await client.query(
       "BEGIN"
     );
@@ -593,7 +621,7 @@ export const leaveMatch = async (req, res) => {
           "User not in match",
       });
     }
-
+    const playerName = playerResult.rows[0]?.name;
     await client.query(
       `
       DELETE FROM match_players
@@ -613,6 +641,18 @@ export const leaveMatch = async (req, res) => {
       [id]
     );
 
+    if (
+      creatorToken &&
+      creatorId !== userId
+    ) {
+
+      await sendNotification(
+        creatorToken,
+        "⚠️ Player Left",
+        `${playerName} left your match`
+      );
+
+    }
     await client.query(
       "COMMIT"
     );
@@ -658,6 +698,20 @@ export const deleteMatch = async (
     const userId =
       req.user.userId;
 
+    const playersResult =
+      await client.query(
+        `
+    SELECT
+      u.fcm_token,
+      u.name
+    FROM match_players mp
+    JOIN users u
+      ON mp.user_id = u.id
+    WHERE mp.match_id = $1
+    `,
+        [id]
+      );
+
     await client.query(
       "BEGIN"
     );
@@ -671,7 +725,8 @@ export const deleteMatch = async (
       `,
         [id]
       );
-
+    const sport =
+      matchResult.rows[0]?.sport;
     if (
       matchResult.rows.length === 0
     ) {
@@ -717,6 +772,12 @@ export const deleteMatch = async (
       WHERE id = $1
       `,
       [id]
+    );
+
+    await sendNotification(
+      player.fcm_token,
+      "⚠️ Match Cancelled",
+      `${sport} match has been cancelled`
     );
 
     await client.query(
