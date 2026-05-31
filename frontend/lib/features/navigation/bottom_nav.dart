@@ -28,11 +28,13 @@ class _MainNavigationScreenState
   Widget build(BuildContext context) {
 
     return Scaffold(
+      
 
       body: screens[currentIndex],
 
       bottomNavigationBar:
           BottomNavigationBar(
+         backgroundColor: Colors.transparent,
 
         currentIndex: currentIndex,
 
