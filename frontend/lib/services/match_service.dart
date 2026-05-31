@@ -48,16 +48,9 @@ class MatchService {
           "sport": sport,
           "turf_id": turf_id,
           "turfName": turfName,
-
-          "latitude": 9.9312,
-          "longitude": 76.2673,
-
           "startTime": startTime,
-
           "endTime": endTime,
-
           "totalSlots": totalSlots,
-
           "amountPerPerson": amountPerPerson,
         },
       );

@@ -1,5 +1,8 @@
 import pool from "../db/pool.js";
 import { getDistance } from "geolib";
+import { sendNotification }
+  from "../services/notification.services.js";
+
 
 export const createMatch = async (req, res) => {
   const client = await pool.connect();
@@ -9,8 +12,6 @@ export const createMatch = async (req, res) => {
       sport,
       turf_id,
       turfName,
-      latitude,
-      longitude,
       startTime,
       endTime,
       totalSlots,
@@ -21,6 +22,21 @@ export const createMatch = async (req, res) => {
     const creatorId = req.user.userId;
 
     await client.query("BEGIN");
+
+    const turfResult = await pool.query(
+      `
+  SELECT latitude, longitude
+  FROM turfs
+  WHERE id = $1
+  `,
+      [turf_id]
+    );
+
+    const latitude =
+      turfResult.rows[0].latitude;
+
+    const longitude =
+      turfResult.rows[0].longitude;
 
     // Create match
     const matchQuery = `
@@ -224,7 +240,15 @@ export const joinMatch = async (req, res) => {
         message: "User already joined",
       });
     }
+    if (match.creator_id === userId) {
 
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        success: false,
+        message: "Match creator cannot join their own match",
+      });
+    }
     // Add player
     await client.query(
       `
@@ -237,15 +261,62 @@ export const joinMatch = async (req, res) => {
       [userId, id]
     );
 
+    const creatorResult =
+      await client.query(
+        `
+    SELECT
+      u.fcm_token,
+      u.name
+    FROM users u
+    JOIN matches m
+    ON m.creator_id = u.id
+    WHERE m.id = $1
+    `,
+        [id]
+      );
+
+
+    const playerResult =
+      await client.query(
+        `
+    SELECT name
+    FROM users
+    WHERE id = $1
+    `,
+        [userId]
+      );
     // Reduce slots
     await client.query(
       `
       UPDATE matches
-      SET available_slots = available_slots
+      SET available_slots = available_slots-1
       WHERE id = $1
       `,
       [id]
     );
+
+    const creator =
+      creatorResult.rows[0];
+
+    const player =
+      playerResult.rows[0];
+
+    if (
+      creator?.fcm_token &&
+      match.creator_id !== userId
+    ) {
+      console.log("SENDING NOTIFICATION");
+      console.log("TOKEN:", creator?.fcm_token);
+      await sendNotification(
+
+        creator.fcm_token,
+
+        "⚽ New Player Joined",
+
+        `${player.name} joined your match`
+      );
+      console.log("NOTIFICATION SENT");
+    }
 
     await client.query("COMMIT");
 
@@ -516,6 +587,40 @@ export const leaveMatch = async (req, res) => {
     const userId =
       req.user.userId;
 
+    const creatorResult = await client.query(
+      `
+        SELECT creator_id
+        FROM matches
+        WHERE id = $1
+  `,
+      [id]
+    );
+
+    const creatorId =
+      creatorResult.rows[0]?.creator_id;
+
+    if (creatorId === userId) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Match creator cannot leave their own match",
+      });
+    }
+
+
+    const tokenResult = await client.query(
+      `
+      SELECT fcm_token
+      FROM users
+      WHERE id = $1
+  `,
+      [creatorId]
+    );
+
+    const creatorToken =
+      tokenResult.rows[0]?.fcm_token;
+
+
     await client.query(
       "BEGIN"
     );
@@ -545,7 +650,7 @@ export const leaveMatch = async (req, res) => {
           "User not in match",
       });
     }
-
+    const playerName = playerResult.rows[0]?.name;
     await client.query(
       `
       DELETE FROM match_players
@@ -565,6 +670,18 @@ export const leaveMatch = async (req, res) => {
       [id]
     );
 
+    if (
+      creatorToken &&
+      creatorId !== userId
+    ) {
+
+      await sendNotification(
+        creatorToken,
+        "⚠️ Player Left",
+        `${playerName} left your match`
+      );
+
+    }
     await client.query(
       "COMMIT"
     );
@@ -610,6 +727,20 @@ export const deleteMatch = async (
     const userId =
       req.user.userId;
 
+    const playersResult =
+      await client.query(
+        `
+    SELECT
+      u.fcm_token,
+      u.name
+    FROM match_players mp
+    JOIN users u
+      ON mp.user_id = u.id
+    WHERE mp.match_id = $1
+    `,
+        [id]
+      );
+
     await client.query(
       "BEGIN"
     );
@@ -623,7 +754,8 @@ export const deleteMatch = async (
       `,
         [id]
       );
-
+    const sport =
+      matchResult.rows[0]?.sport;
     if (
       matchResult.rows.length === 0
     ) {
@@ -670,6 +802,18 @@ export const deleteMatch = async (
       `,
       [id]
     );
+
+    for (const player of playersResult.rows) {
+
+      if (!player.fcm_token) continue;
+
+      await sendNotification(
+        player.fcm_token,
+        "⚠️ Match Cancelled",
+        `${player.name}" match has been cancelled`
+      );
+
+    }
 
     await client.query(
       "COMMIT"

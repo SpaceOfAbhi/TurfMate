@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "642219133476",
+    "project_id": "turf-mate-18a2b",
+    "storage_bucket": "turf-mate-18a2b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642219133476:android:6e386d1b956b748782a6b1",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl0qsMFQRjAAMxI9CK8-ehBO8Dm9OgJvo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

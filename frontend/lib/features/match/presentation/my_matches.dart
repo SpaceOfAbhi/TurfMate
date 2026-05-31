@@ -44,7 +44,7 @@ class CreatedMatchesTab extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            ref.invalidate(myCreatedMatchesProvider);
+            ref.refresh(myCreatedMatchesProvider);
           },
           child: ListView.builder(
             itemCount: data.length,
@@ -88,7 +88,7 @@ class CreatedMatchesTab extends ConsumerWidget {
                   try {
                     await MatchService().deleteMatch(match["id"]);
 
-                    ref.invalidate(myCreatedMatchesProvider);
+                    ref.refresh(myCreatedMatchesProvider);
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Match deleted")),
@@ -125,7 +125,7 @@ class JoinedMatchesTab extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            ref.invalidate(myJoinedMatchesProvider);
+            ref.refresh(myJoinedMatchesProvider);
           },
           child: ListView.builder(
             itemCount: data.length,
@@ -158,7 +158,7 @@ class JoinedMatchesTab extends ConsumerWidget {
                   try {
                     await MatchService().leaveMatch(match["id"]);
 
-                    ref.invalidate(myJoinedMatchesProvider);
+                    ref.refresh(myJoinedMatchesProvider);
 
                     ScaffoldMessenger.of(
                       context,

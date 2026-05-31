@@ -21,6 +21,33 @@ class HomeScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout),
 
             onPressed: () async {
+              final shouldLogout = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Logout"),
+                    content: const Text("Are you sure you want to logout?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                        child: const Text("Cancel"),
+                      ),
+
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                        child: const Text("Logout"),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (shouldLogout != true) return;
+
               await AuthService().logout();
 
               if (!context.mounted) return;
@@ -34,12 +61,12 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-     
+
       body: matchesAsync.when(
         data: (matches) {
           return RefreshIndicator(
             onRefresh: () async {
-              ref.invalidate(nearbyMatchesProvider);
+              ref.refresh(nearbyMatchesProvider);
             },
             child: ListView.builder(
               itemCount: matches.length,
@@ -58,9 +85,7 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                     title: Text(match.sport),
-                    subtitle: Text(
-  "${match.turfName}\n${match.locationName}",
-),
+                    subtitle: Text("${match.turfName}\n${match.locationName}"),
                     trailing: Text('${match.availableSlots} slots'),
                   ),
                 );
