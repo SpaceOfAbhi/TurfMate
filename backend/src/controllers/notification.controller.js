@@ -2,16 +2,24 @@ import pool from "../db/pool.js";
 
 export const updateFcmToken = async (req, res) => {
   try {
+
+    console.log("FCM TOKEN REQUEST");
+    console.log(req.user);
+    console.log(req.body);
+
     const { token } = req.body;
 
-    await pool.query(
+    const result = await pool.query(
       `
       UPDATE users
       SET fcm_token = $1
       WHERE id = $2
+      RETURNING *
       `,
-      [token, req.user.id]
+      [token, req.user.userId] // <-- use userId
     );
+
+    console.log(result.rows);
 
     res.json({
       success: true,

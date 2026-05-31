@@ -11,10 +11,21 @@ class NotificationService {
   }
 
   Future<void> saveFcmToken() async {
-    final token = await FirebaseMessaging.instance.getToken();
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
 
-    if (token == null) return;
+      print("SAVING TOKEN: $token");
 
-    await dio.post("/users/fcm-token", data: {"token": token});
+      if (token == null) return;
+
+      final response = await dio.post(
+        "/notifications/fcm-token",
+        data: {"token": token},
+      );
+      print("FCM SAVE RESPONSE:");
+      print(response.data);
+    } catch (e) {
+      print("FCM SAVE ERROR: $e");
+    }
   }
 }
