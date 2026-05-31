@@ -132,7 +132,7 @@ export const getNearbyMatches = async (req, res) => {
     FROM matches m
     LEFT JOIN turfs t
     ON m.turf_id = t.id
-    WHERE m.start_time > NOW() + INTERVAL '5 minutes'
+    WHERE m.start_time > NOW() + INTERVAL '5 minutes' AND m.creator_id != $1
     ORDER BY m.start_time
     `);
 
