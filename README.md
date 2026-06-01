@@ -1,6 +1,6 @@
 # TurfMate ⚽
 
-TurfMate is a football community platform built to help players discover matches, connect with local football enthusiasts, and organize games effortlessly.
+TurfMate is a sports community platform built to help players discover matches, connect with local enthusiasts, and organize games effortlessly.
 
 Whether you're looking for a match to join or planning your own game, TurfMate brings players together through a simple and intuitive mobile experience.
 
@@ -121,4 +121,4 @@ Passionate about Flutter development, mobile applications, and creating solution
 
 ---
 
-### "Find Matches. Join Games. Play Football." ⚽
+### "Find Players . Join Matches." ⚽
