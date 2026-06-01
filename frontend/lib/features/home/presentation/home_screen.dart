@@ -21,6 +21,8 @@ class HomeScreen extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
+          toolbarHeight: 80,
+          
           title: const AppTitle(),
           backgroundColor: Colors.transparent,
           actions: [
@@ -96,7 +98,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
-
+    
         body: matchesAsync.when(
           data: (matches) {
             return RefreshIndicator(
