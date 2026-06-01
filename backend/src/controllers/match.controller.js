@@ -134,7 +134,8 @@ export const getNearbyMatches = async (req, res) => {
     ON m.turf_id = t.id
     WHERE m.start_time > NOW() + INTERVAL '5 minutes' AND m.creator_id != $1
     ORDER BY m.start_time
-    `);
+    `
+      , [req.user.userId]);
 
     const matches = result.rows;
 
@@ -468,6 +469,7 @@ export const getMyJoinedMatches = async (req, res) => {
     LEFT JOIN turfs t
     ON m.turf_id = t.id
     WHERE mp.user_id = $1
+    AND m.creator_id != $1
     ORDER BY m.start_time DESC
         `,
         [userId]

@@ -1,65 +1,108 @@
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/features/match/presentation/create_match.dart';
 import 'package:frontend/features/match/presentation/my_matches.dart';
+import 'package:frontend/features/match/provider/my_matches_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../home/presentation/home_screen.dart';
 
-
-class MainNavigationScreen extends StatefulWidget {
+class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
 
   @override
-  State<MainNavigationScreen> createState() =>
+  ConsumerState<MainNavigationScreen> createState() =>
       _MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState
-    extends State<MainNavigationScreen> {
-
+class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen>
+    with SingleTickerProviderStateMixin {
   int currentIndex = 0;
+  late TabController _tabController;
 
-  final screens = const [
-    HomeScreen(),
-    CreateMatchScreen(),
-    MyMatchesScreen(),
-  ];
+  final screens = const [HomeScreen(), CreateMatchScreen(), MyMatchesScreen()];
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Widget navItem(IconData icon, String label, {required bool selected}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: selected ? AppColors.focusColor : Colors.white),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.anta(
+              fontSize: selected ? 13 : 12,
+              color: selected ? AppColors.focusColor : Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
+      extendBody: true,
       body: screens[currentIndex],
 
-      bottomNavigationBar:
-          BottomNavigationBar(
-
-        currentIndex: currentIndex,
-
-        onTap: (index) {
-
-          setState(() {
-            currentIndex = index;
-          });
-        },
-
-        items: const [
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.focusColor.withOpacity(0.2),
+                blurRadius: 35,
+              ),
+            ],
           ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle),
-            label: "Create",
+          child: TabBar(
+            controller: _tabController,
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            indicator: const UnderlineTabIndicator(borderSide: BorderSide.none),
+            dividerColor: Colors.transparent,
+            onTap: (index) {
+              setState(() {
+                currentIndex = index;
+              });
+              if (index == 2) {
+                ref.refresh(myJoinedMatchesProvider);
+                ref.refresh(myCreatedMatchesProvider);
+              }
+            },
+            tabs: [
+              navItem(Icons.home, "Home", selected: currentIndex == 0),
+              navItem(Icons.add_circle, "Create", selected: currentIndex == 1),
+              navItem(
+                Icons.sports_soccer,
+                "Matches",
+                selected: currentIndex == 2,
+              ),
+            ],
           ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_soccer),
-            label: "My Matches",
-          ),
-        ],
+        ),
       ),
     );
   }
