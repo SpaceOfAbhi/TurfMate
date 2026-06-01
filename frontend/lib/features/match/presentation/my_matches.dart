@@ -4,6 +4,7 @@ import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/features/match/presentation/players_details_screen.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
 import 'package:frontend/services/match_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyMatchesScreen extends ConsumerWidget {
   const MyMatchesScreen({super.key});
@@ -12,15 +13,21 @@ class MyMatchesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultTabController(
       length: 2,
+      
       child: AppBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
              backgroundColor: Colors.transparent,
-            title: const Text("My Matches"),
-            bottom: const TabBar(
+            title: Text("My Matches",
+            style: GoogleFonts.anta(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),),
+            bottom: TabBar(
+              labelStyle: GoogleFonts.anta(fontSize: 14, fontWeight: FontWeight.bold),
               tabs: [
-                Tab(text: "Created"),
+                Tab(text: "Created",),
                 Tab(text: "Joined"),
               ],
             ),

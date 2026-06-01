@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/features/match/presentation/create_match.dart';
 import 'package:frontend/features/match/presentation/my_matches.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../home/presentation/home_screen.dart';
 
@@ -42,8 +43,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: selected ? 14 : 12,
+            style: GoogleFonts.anta(
+              fontSize: selected ? 13 : 12,
               color: selected ? AppColors.focusColor : Colors.white70,
             ),
           ),
@@ -70,6 +71,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
             ],
           ),
           child: TabBar(
+            
             controller: _tabController,
             overlayColor: WidgetStateProperty.all(Colors.transparent),
             indicator: const UnderlineTabIndicator(
