@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/core/widgets/app_logo.dart';
 import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/features/auth/presentation/auth_screen.dart';
 import 'package:frontend/features/home/provider/home_provider.dart';
 import 'package:frontend/features/match/presentation/match_details_screen.dart';
 import 'package:frontend/services/auth_services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,51 +23,80 @@ class HomeScreen extends ConsumerWidget {
           title: const AppTitle(),
           backgroundColor: Colors.transparent,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-      
-              onPressed: () async {
-                final shouldLogout = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Logout"),
-                      content: const Text("Are you sure you want to logout?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                          child: const Text("Cancel"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                  shadowColor:AppColors.focusColor,
+                ),
+                label: Text(
+                  "Logout",
+                  style: GoogleFonts.anta(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
+                  
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text(
+                          "Logout",
+                          style: GoogleFonts.anta(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-      
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                          child: const Text("Logout"),
+                        content: Text(
+                          "Are you sure you want to logout?",
+                          style: GoogleFonts.anta(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ],
-                    );
-                  },
-                );
-      
-                if (shouldLogout != true) return;
-      
-                await AuthService().logout();
-      
-                if (!context.mounted) return;
-      
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AuthScreen()),
-                  (route) => false,
-                );
-              },
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: Text("Cancel"),
+                          ),
+
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text(
+                              "Logout",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
+                  if (shouldLogout != true) return;
+
+                  await AuthService().logout();
+
+                  if (!context.mounted) return;
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AuthScreen()),
+                    (route) => false,
+                  );
+                },
+              ),
             ),
           ],
         ),
-      
+
         body: matchesAsync.when(
           data: (matches) {
             return RefreshIndicator(
@@ -76,20 +107,23 @@ class HomeScreen extends ConsumerWidget {
                 itemCount: matches.length,
                 itemBuilder: (context, index) {
                   final match = matches[index];
-      
+
                   return Card(
                     child: ListTile(
                       onTap: () {
                         Navigator.push(
                           context,
-      
+
                           MaterialPageRoute(
-                            builder: (_) => MatchDetailsScreen(matchId: match.id),
+                            builder: (_) =>
+                                MatchDetailsScreen(matchId: match.id),
                           ),
                         );
                       },
                       title: Text(match.sport),
-                      subtitle: Text("${match.turfName}\n${match.locationName}"),
+                      subtitle: Text(
+                        "${match.turfName}\n${match.locationName}",
+                      ),
                       trailing: Text('${match.availableSlots} slots'),
                     ),
                   );
@@ -97,9 +131,9 @@ class HomeScreen extends ConsumerWidget {
               ),
             );
           },
-      
+
           loading: () => const Center(child: CircularProgressIndicator()),
-      
+
           error: (e, _) => Center(child: Text(e.toString())),
         ),
       ),

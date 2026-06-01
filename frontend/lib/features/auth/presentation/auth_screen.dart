@@ -139,214 +139,216 @@ class _AuthScreenState extends State<AuthScreen> {
         body: Padding(
           padding: const EdgeInsets.all(20),
 
-          child: Column(
-
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-
-            children: [
-              SizedBox(height: isLogin? MediaQuery.of(context).size.height*.25 : MediaQuery.of(context).size.height*.15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [const AppTitle(),],),
-              const WelcomeText(),
-              const SizedBox(height: 30),
-
-              if (!isLogin)
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: "Name",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
+          child: SingleChildScrollView(
+            child: Column(
+            
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+            
+              children: [
+                SizedBox(height: isLogin? MediaQuery.of(context).size.height*.25 : MediaQuery.of(context).size.height*.15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [const AppTitle(),],),
+                const WelcomeText(),
+                const SizedBox(height: 30),
+            
+                if (!isLogin)
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: "Name",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.backgroundColor,
-                   
-                  ),
-                ),
-
-              if (!isLogin) const SizedBox(height: 16),
-
-              TextField(
-                controller: emailController,
-                decoration:  InputDecoration(
-                  hoverColor: AppColors.focusColor,
-                  labelText: "Email",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.backgroundColor,
-                   
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: passwordController,
-
-                obscureText: true,
-
-                decoration:  InputDecoration(
-                  labelText: "Password",
-                 border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.backgroundColor,
-                   
-                ),
-              ),
-
-              if (!isLogin) const SizedBox(height: 16),
-
-              if (!isLogin)
-                TextField(
-                  controller: locationController,
-
-                  decoration: InputDecoration(
-                    labelText: "Location",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(
-                        color: AppColors.borderColor,
-                        width: 1,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.backgroundColor,
-                   
-
-                    suffixIcon: IconButton(
-                      icon: isFetchingLocation
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.my_location),
-
-                      onPressed: () async {
-                        try {
-                          setState(() {
-                            isFetchingLocation = true;
-                          });
-
-                          final location = await LocationService()
-                              .getCurrentLocation();
-
-                          setState(() {
-                            latitude = location["latitude"];
-
-                            longitude = location["longitude"];
-
-                            locationName = location["locationName"];
-
-                            locationController.text = locationName!;
-
-                            isFetchingLocation = false;
-                          });
-                        } catch (e) {
-                          setState(() {
-                            isFetchingLocation = false;
-                          });
-
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
-                      },
+                      filled: true,
+                      fillColor: AppColors.backgroundColor,
+                     
                     ),
                   ),
-
-                  onChanged: (value) {
-                    locationName = value;
-
-                    latitude = null;
-                    longitude = null;
+            
+                if (!isLogin) const SizedBox(height: 16),
+            
+                TextField(
+                  controller: emailController,
+                  decoration:  InputDecoration(
+                    hoverColor: AppColors.focusColor,
+                    labelText: "Email",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.backgroundColor,
+                     
+                  ),
+                ),
+            
+                const SizedBox(height: 16),
+            
+                TextField(
+                  controller: passwordController,
+            
+                  obscureText: true,
+            
+                  decoration:  InputDecoration(
+                    labelText: "Password",
+                   border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.backgroundColor,
+                     
+                  ),
+                ),
+            
+                if (!isLogin) const SizedBox(height: 16),
+            
+                if (!isLogin)
+                  TextField(
+                    controller: locationController,
+            
+                    decoration: InputDecoration(
+                      labelText: "Location",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: const BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(
+                          color: AppColors.borderColor,
+                          width: 1,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.backgroundColor,
+                     
+            
+                      suffixIcon: IconButton(
+                        icon: isFetchingLocation
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.my_location),
+            
+                        onPressed: () async {
+                          try {
+                            setState(() {
+                              isFetchingLocation = true;
+                            });
+            
+                            final location = await LocationService()
+                                .getCurrentLocation();
+            
+                            setState(() {
+                              latitude = location["latitude"];
+            
+                              longitude = location["longitude"];
+            
+                              locationName = location["locationName"];
+            
+                              locationController.text = locationName!;
+            
+                              isFetchingLocation = false;
+                            });
+                          } catch (e) {
+                            setState(() {
+                              isFetchingLocation = false;
+                            });
+            
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text(e.toString())));
+                          }
+                        },
+                      ),
+                    ),
+            
+                    onChanged: (value) {
+                      locationName = value;
+            
+                      latitude = null;
+                      longitude = null;
+                    },
+                  ),
+            
+                const SizedBox(height: 24),
+            
+                SizedBox(
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.borderColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: isLoading ? null : submit,
+                  
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 30,
+                            width: 20,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(isLogin ? "Login ⚽" : "Sign Up ⚽"),
+                  ),
+                ),
+            
+                const SizedBox(height: 16),
+            
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isLogin = !isLogin;
+                    });
                   },
-                ),
-
-              const SizedBox(height: 24),
-
-              SizedBox(
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.borderColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+            
+                  child: Text(
+                    isLogin
+                        ? "Don't have an account? Sign Up"
+                        : "Already have an account? Login",
                   ),
-                  onPressed: isLoading ? null : submit,
-                
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 30,
-                          width: 20,
-                          child: CircularProgressIndicator(),
-                        )
-                      : Text(isLogin ? "Login ⚽" : "Sign Up ⚽"),
                 ),
-              ),
-
-              const SizedBox(height: 16),
-
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    isLogin = !isLogin;
-                  });
-                },
-
-                child: Text(
-                  isLogin
-                      ? "Don't have an account? Sign Up"
-                      : "Already have an account? Login",
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
