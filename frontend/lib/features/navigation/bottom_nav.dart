@@ -1,19 +1,24 @@
+// ignore_for_file: unused_result
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/features/match/presentation/create_match.dart';
 import 'package:frontend/features/match/presentation/my_matches.dart';
+import 'package:frontend/features/match/provider/my_matches_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../home/presentation/home_screen.dart';
 
-class MainNavigationScreen extends StatefulWidget {
+class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
 
   @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  ConsumerState<MainNavigationScreen> createState() =>
+      _MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen>
+class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen>
     with SingleTickerProviderStateMixin {
   int currentIndex = 0;
   late TabController _tabController;
@@ -64,32 +69,32 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         child: Container(
           height: 80,
           decoration: BoxDecoration(
-            color: AppColors.backgroundColor,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
-              BoxShadow(color: AppColors.focusColor.withOpacity(0.4), blurRadius: 35),
+              BoxShadow(
+                color: AppColors.focusColor.withOpacity(0.2),
+                blurRadius: 35,
+              ),
             ],
           ),
           child: TabBar(
-            
             controller: _tabController,
             overlayColor: WidgetStateProperty.all(Colors.transparent),
-            indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide.none,
-            ),
+            indicator: const UnderlineTabIndicator(borderSide: BorderSide.none),
             dividerColor: Colors.transparent,
             onTap: (index) {
               setState(() {
                 currentIndex = index;
               });
+              if (index == 2) {
+                ref.refresh(myJoinedMatchesProvider);
+                ref.refresh(myCreatedMatchesProvider);
+              }
             },
             tabs: [
               navItem(Icons.home, "Home", selected: currentIndex == 0),
-              navItem(
-                Icons.add_circle,
-                "Create",
-                selected: currentIndex == 1,
-              ),
+              navItem(Icons.add_circle, "Create", selected: currentIndex == 1),
               navItem(
                 Icons.sports_soccer,
                 "Matches",

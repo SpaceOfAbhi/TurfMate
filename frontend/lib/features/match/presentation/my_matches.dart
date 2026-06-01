@@ -58,7 +58,7 @@ class CreatedMatchesTab extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            ref.refresh(myCreatedMatchesProvider);
+            ref.invalidate(myCreatedMatchesProvider);
           },
           child: ListView.builder(
             itemCount: data.length,
@@ -83,8 +83,14 @@ class CreatedMatchesTab extends ConsumerWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text("Delete Match?"),
-                      content: const Text("This cannot be undone."),
+                      title: Text("Delete Match?",style: GoogleFonts.anta(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                      content: Text("This cannot be undone.",style: GoogleFonts.anta(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
@@ -92,7 +98,7 @@ class CreatedMatchesTab extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Delete"),
+                          child: const Text("Delete",style: TextStyle(color: Colors.red)),
                         ),
                       ],
                     ),
@@ -102,7 +108,7 @@ class CreatedMatchesTab extends ConsumerWidget {
                   try {
                     await MatchService().deleteMatch(match["id"]);
 
-                    ref.refresh(myCreatedMatchesProvider);
+                    ref.invalidate(myCreatedMatchesProvider);
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Match deleted")),
@@ -139,7 +145,7 @@ class JoinedMatchesTab extends ConsumerWidget {
 
         return RefreshIndicator(
           onRefresh: () async {
-            ref.refresh(myJoinedMatchesProvider);
+            ref.invalidate(myJoinedMatchesProvider);
           },
           child: ListView.builder(
             itemCount: data.length,
@@ -153,8 +159,14 @@ class JoinedMatchesTab extends ConsumerWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text("Leave Match?"),
-                      content: const Text("Are you sure you want to leave this match?"),
+                      title:  Text("Leave Match?",style: GoogleFonts.anta(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                      content: Text("Are you sure you want to leave this match?",style: GoogleFonts.anta(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
@@ -162,7 +174,7 @@ class JoinedMatchesTab extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Leave"),
+                          child: const Text("Leave",style: TextStyle(color: Colors.red)),
                         ),
                       ],
                     ),
@@ -172,7 +184,7 @@ class JoinedMatchesTab extends ConsumerWidget {
                   try {
                     await MatchService().leaveMatch(match["id"]);
 
-                    ref.refresh(myJoinedMatchesProvider);
+                    ref.invalidate(myJoinedMatchesProvider);
 
                     ScaffoldMessenger.of(
                       context,
@@ -228,29 +240,30 @@ class MatchCard extends StatelessWidget {
             children: [
               Text(
                 match["sport"] ?? "",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: GoogleFonts.anta(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
 
-              Text(match["turf_name"] ?? ""),
+              Text(match["turf_name"] ?? "", style: GoogleFonts.anta(fontSize: 16)),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
 
               Text(
                 "Slots: ${match["available_slots"]}/${match["total_slots"]}",
+                style: GoogleFonts.anta(fontSize: 14),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
 
-              Text("₹${match["amount_per_person"]}"),
+              Text("₹${match["amount_per_person"]}", style: GoogleFonts.anta(fontSize: 16)),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
 
-              Text(match["start_time"].toString()),
+              Text(match["start_time"].toString(), style: GoogleFonts.anta(fontSize: 14)),
 
               const SizedBox(height: 16),
 

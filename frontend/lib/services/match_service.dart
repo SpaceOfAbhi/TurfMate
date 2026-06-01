@@ -1,4 +1,5 @@
 import 'package:frontend/core/network/dio_provider.dart';
+import 'package:frontend/features/match/provider/my_matches_provider.dart';
 import 'package:frontend/models/match_model.dart';
 
 class MatchService {

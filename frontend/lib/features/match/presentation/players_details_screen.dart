@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/core/widgets/background_img.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../services/match_service.dart';
 
@@ -25,43 +27,52 @@ class _PlayerListScreenState extends State<PlayerListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Joined Players")),
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            "Joined Players",
+            style: GoogleFonts.anta(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
 
-      body: FutureBuilder(
-        future: playersFuture,
+        body: FutureBuilder(
+          future: playersFuture,
 
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
-          }
+            if (snapshot.hasError) {
+              return Center(child: Text(snapshot.error.toString()));
+            }
 
-          final players = snapshot.data ?? [];
+            final players = snapshot.data ?? [];
 
-          if (players.isEmpty) {
-            return const Center(child: Text("No players joined"));
-          }
+            if (players.isEmpty) {
+              return const Center(child: Text("No players joined"));
+            }
 
-          return ListView.builder(
-            itemCount: players.length,
+            return ListView.builder(
+              itemCount: players.length,
 
-            itemBuilder: (context, index) {
-              final player = players[index];
+              itemBuilder: (context, index) {
+                final player = players[index];
 
-              return ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.person)),
+                return ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.person)),
 
-                title: Text(player["name"] ?? ""),
+                  title: Text(player["name"] ?? ""),
 
-                subtitle: Text(player["location_name"] ?? ""),
-              );
-            },
-          );
-        },
+                  subtitle: Text(player["location_name"] ?? ""),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
