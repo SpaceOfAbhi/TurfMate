@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/core/widgets/app_logo.dart';
 import 'package:frontend/core/widgets/background_img.dart';
+import 'package:frontend/core/widgets/shimmer.dart';
 import 'package:frontend/features/auth/presentation/auth_screen.dart';
 import 'package:frontend/features/home/provider/home_provider.dart';
 import 'package:frontend/features/match/presentation/match_details_screen.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           toolbarHeight: 80,
-          
+
           title: const AppTitle(),
           backgroundColor: Colors.transparent,
           actions: [
@@ -98,7 +99,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
         ),
-    
+
         body: matchesAsync.when(
           data: (matches) {
             return RefreshIndicator(
@@ -116,7 +117,7 @@ class HomeScreen extends ConsumerWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: const BorderSide(
-                          color:AppColors.borderColor,
+                          color: AppColors.borderColor,
                           width: 1.5,
                         ),
                       ),
@@ -247,7 +248,11 @@ class HomeScreen extends ConsumerWidget {
             );
           },
 
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => ListView.builder(
+            itemCount: 3,
+
+            itemBuilder: (_, _) => const MatchCardShimmer(),
+          ),
 
           error: (e, _) => Center(child: Text(e.toString())),
         ),

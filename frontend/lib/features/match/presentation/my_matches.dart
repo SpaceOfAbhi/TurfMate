@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/widgets/background_img.dart';
+import 'package:frontend/core/widgets/shimmer.dart';
 import 'package:frontend/features/match/presentation/players_details_screen.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
 import 'package:frontend/services/match_service.dart';
@@ -15,21 +16,26 @@ class MyMatchesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DefaultTabController(
       length: 2,
-      
+
       child: AppBackground(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-             backgroundColor: Colors.transparent,
-            title: Text("My Matches",
-            style: GoogleFonts.anta(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),),
+            backgroundColor: Colors.transparent,
+            title: Text(
+              "My Matches",
+              style: GoogleFonts.anta(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             bottom: TabBar(
-              labelStyle: GoogleFonts.anta(fontSize: 14, fontWeight: FontWeight.bold),
+              labelStyle: GoogleFonts.anta(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
               tabs: [
-                Tab(text: "Created",),
+                Tab(text: "Created"),
                 Tab(text: "Joined"),
               ],
             ),
@@ -83,14 +89,20 @@ class CreatedMatchesTab extends ConsumerWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: Text("Delete Match?",style: GoogleFonts.anta(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                      content: Text("This cannot be undone.",style: GoogleFonts.anta(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),),
+                      title: Text(
+                        "Delete Match?",
+                        style: GoogleFonts.anta(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      content: Text(
+                        "This cannot be undone.",
+                        style: GoogleFonts.anta(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
@@ -98,7 +110,10 @@ class CreatedMatchesTab extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Delete",style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -124,7 +139,12 @@ class CreatedMatchesTab extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+            itemCount: 3,
+
+            itemBuilder: (_, _) => const MatchCardShimmer(),
+          ),
+
       error: (e, _) => Center(child: Text(e.toString())),
     );
   }
@@ -159,14 +179,20 @@ class JoinedMatchesTab extends ConsumerWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title:  Text("Leave Match?",style: GoogleFonts.anta(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                      content: Text("Are you sure you want to leave this match?",style: GoogleFonts.anta(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),),
+                      title: Text(
+                        "Leave Match?",
+                        style: GoogleFonts.anta(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      content: Text(
+                        "Are you sure you want to leave this match?",
+                        style: GoogleFonts.anta(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
@@ -174,7 +200,10 @@ class JoinedMatchesTab extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Leave",style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            "Leave",
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -200,7 +229,12 @@ class JoinedMatchesTab extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => ListView.builder(
+        itemCount: 3,
+
+        itemBuilder: (_, _) => const MatchCardShimmer(),
+      ),
+
       error: (e, _) => Center(child: Text(e.toString())),
     );
   }
@@ -241,14 +275,17 @@ class MatchCard extends StatelessWidget {
               Text(
                 match["sport"] ?? "",
                 style: GoogleFonts.anta(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
 
               const SizedBox(height: 5),
 
-              Text(match["turf_name"] ?? "", style: GoogleFonts.anta(fontSize: 16)),
+              Text(
+                match["turf_name"] ?? "",
+                style: GoogleFonts.anta(fontSize: 16),
+              ),
 
               const SizedBox(height: 5),
 
@@ -259,11 +296,17 @@ class MatchCard extends StatelessWidget {
 
               const SizedBox(height: 5),
 
-              Text("₹${match["amount_per_person"]}", style: GoogleFonts.anta(fontSize: 16)),
+              Text(
+                "₹${match["amount_per_person"]}",
+                style: GoogleFonts.anta(fontSize: 16),
+              ),
 
               const SizedBox(height: 5),
 
-              Text(match["start_time"].toString(), style: GoogleFonts.anta(fontSize: 14)),
+              Text(
+                match["start_time"].toString(),
+                style: GoogleFonts.anta(fontSize: 14),
+              ),
 
               const SizedBox(height: 16),
 
