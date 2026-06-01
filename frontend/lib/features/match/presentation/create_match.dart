@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/features/turf/providers/turf_provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../services/match_service.dart';
 
@@ -129,7 +130,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text("Create Match"),
+          title: Text("Create Match",style: GoogleFonts.poppins(fontWeight: FontWeight.w500),),
           backgroundColor: Colors.transparent,
         ),
 
@@ -142,6 +143,7 @@ class _CreateMatchScreenState extends ConsumerState<CreateMatchScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  SizedBox(height: 16),
                   TextFormField(
                     controller: sportController,
 

@@ -197,7 +197,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                     await joinMatch();
                   },
 
-                  child: const Text('Join Match'),
+                  child: Text('Join Match ⚽', style: GoogleFonts.anta(fontSize: 15),),
                 ),
               ),
               SizedBox(height: 12),
@@ -214,7 +214,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                   ),
                   onPressed: openGoogleMaps,
 
-                  child: const Text('Get Direction '),
+                  child: Text('Get Direction ', style: GoogleFonts.anta(fontSize: 15),),
                 ),
               ),
               SizedBox(height: 50),
