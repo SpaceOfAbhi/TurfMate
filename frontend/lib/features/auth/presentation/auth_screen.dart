@@ -53,6 +53,12 @@ class _AuthScreenState extends State<AuthScreen> {
           } catch (e) {
             print("Error saving FCM token: $e");
           }
+
+          try {
+            await LocationService().getCurrentLocation();
+          } catch (e) {
+            print(e);
+          }
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
@@ -141,17 +147,21 @@ class _AuthScreenState extends State<AuthScreen> {
 
           child: SingleChildScrollView(
             child: Column(
-            
               crossAxisAlignment: CrossAxisAlignment.stretch,
-            
+
               children: [
-                SizedBox(height: isLogin? MediaQuery.of(context).size.height*.25 : MediaQuery.of(context).size.height*.15),
+                SizedBox(
+                  height: isLogin
+                      ? MediaQuery.of(context).size.height * .25
+                      : MediaQuery.of(context).size.height * .15,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [const AppTitle(),],),
+                  children: [const AppTitle()],
+                ),
                 const WelcomeText(),
                 const SizedBox(height: 30),
-            
+
                 if (!isLogin)
                   TextField(
                     controller: nameController,
@@ -173,72 +183,69 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       filled: true,
                       fillColor: AppColors.backgroundColor,
-                     
                     ),
                   ),
-            
+
                 if (!isLogin) const SizedBox(height: 16),
-            
+
                 TextField(
                   controller: emailController,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     hoverColor: AppColors.focusColor,
                     labelText: "Email",
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: const BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
-                        ),
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(
+                        color: AppColors.borderColor,
+                        width: 1,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
-                        ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(
+                        color: AppColors.borderColor,
+                        width: 1,
                       ),
-                      filled: true,
-                      fillColor: AppColors.backgroundColor,
-                     
+                    ),
+                    filled: true,
+                    fillColor: AppColors.backgroundColor,
                   ),
                 ),
-            
+
                 const SizedBox(height: 16),
-            
+
                 TextField(
                   controller: passwordController,
-            
+
                   obscureText: true,
-            
-                  decoration:  InputDecoration(
+
+                  decoration: InputDecoration(
                     labelText: "Password",
-                   border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: const BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
-                        ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: const BorderSide(
+                        color: AppColors.borderColor,
+                        width: 1,
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1,
-                        ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(
+                        color: AppColors.borderColor,
+                        width: 1,
                       ),
-                      filled: true,
-                      fillColor: AppColors.backgroundColor,
-                     
+                    ),
+                    filled: true,
+                    fillColor: AppColors.backgroundColor,
                   ),
                 ),
-            
+
                 if (!isLogin) const SizedBox(height: 16),
-            
+
                 if (!isLogin)
                   TextField(
                     controller: locationController,
-            
+
                     decoration: InputDecoration(
                       labelText: "Location",
                       border: OutlineInputBorder(
@@ -257,60 +264,61 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       filled: true,
                       fillColor: AppColors.backgroundColor,
-                     
-            
+
                       suffixIcon: IconButton(
                         icon: isFetchingLocation
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.my_location),
-            
+
                         onPressed: () async {
                           try {
                             setState(() {
                               isFetchingLocation = true;
                             });
-            
+
                             final location = await LocationService()
                                 .getCurrentLocation();
-            
+
                             setState(() {
                               latitude = location["latitude"];
-            
+
                               longitude = location["longitude"];
-            
+
                               locationName = location["locationName"];
-            
+
                               locationController.text = locationName!;
-            
+
                               isFetchingLocation = false;
                             });
                           } catch (e) {
                             setState(() {
                               isFetchingLocation = false;
                             });
-            
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(e.toString())));
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
                           }
                         },
                       ),
                     ),
-            
+
                     onChanged: (value) {
                       locationName = value;
-            
+
                       latitude = null;
                       longitude = null;
                     },
                   ),
-            
+
                 const SizedBox(height: 24),
-            
+
                 SizedBox(
                   height: 50,
                   child: ElevatedButton(
@@ -321,7 +329,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     onPressed: isLoading ? null : submit,
-                  
+
                     child: isLoading
                         ? const SizedBox(
                             height: 30,
@@ -331,16 +339,16 @@ class _AuthScreenState extends State<AuthScreen> {
                         : Text(isLogin ? "Login ⚽" : "Sign Up ⚽"),
                   ),
                 ),
-            
+
                 const SizedBox(height: 16),
-            
+
                 TextButton(
                   onPressed: () {
                     setState(() {
                       isLogin = !isLogin;
                     });
                   },
-            
+
                   child: Text(
                     isLogin
                         ? "Don't have an account? Sign Up"

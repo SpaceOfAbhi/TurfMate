@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/core/theme/colors.dart';
 import 'package:frontend/core/widgets/background_img.dart';
 import 'package:frontend/core/widgets/shimmer.dart';
 import 'package:frontend/features/match/presentation/players_details_screen.dart';
@@ -140,10 +141,10 @@ class CreatedMatchesTab extends ConsumerWidget {
         );
       },
       loading: () => ListView.builder(
-            itemCount: 3,
+        itemCount: 3,
 
-            itemBuilder: (_, _) => const MatchCardShimmer(),
-          ),
+        itemBuilder: (_, _) => const MatchCardShimmer(),
+      ),
 
       error: (e, _) => Center(child: Text(e.toString())),
     );
@@ -264,7 +265,11 @@ class MatchCard extends StatelessWidget {
 
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-
+        borderOnForeground: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: AppColors.borderColor),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
 

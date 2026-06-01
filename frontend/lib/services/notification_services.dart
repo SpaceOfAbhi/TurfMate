@@ -15,11 +15,12 @@ class NotificationService {
         message.notification?.title,
         message.notification?.body,
         const NotificationDetails(
-          android: AndroidNotificationDetails(
+          android:  AndroidNotificationDetails(
             'match_channel',
             'Match Notifications',
             importance: Importance.max,
             priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
           ),
         ),
       );
