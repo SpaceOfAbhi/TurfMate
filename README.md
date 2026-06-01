@@ -1,124 +1,132 @@
-# TurfMate ⚽
+# ⚽ TurfMate
 
-TurfMate is a sports community platform built to help players discover matches, connect with local enthusiasts, and organize games effortlessly.
+TurfMate is a Flutter and Node.js based sports match coordination platform that helps players discover, create, and join nearby turf matches in real time.
 
-Whether you're looking for a match to join or planning your own game, TurfMate brings players together through a simple and intuitive mobile experience.
+## 🚀 Features
 
----
+### Authentication
 
-## 🌟 Features
+* User Registration & Login
+* JWT Based Authentication
+* Secure Session Management
 
-### 🔐 User Authentication
+### Match Management
 
-* Secure user registration and login
-* Personalized player profiles
-* Location-based onboarding
+* Create Sports Matches
+* Join Existing Matches
+* Leave Matches
+* Delete Created Matches
+* View Match Details
 
-### ⚽ Match Discovery
+### Location-Based Discovery
 
-* Browse available football matches
-* View match details and participant information
-* Discover games happening nearby
+* Find Nearby Matches
+* Turf Location Integration
+* Distance-Based Match Filtering
 
-### 📢 Create Matches
+### Real-Time Updates
 
-* Organize football matches in minutes
-* Add match details and requirements
-* Manage participants
+* Live Match Availability
+* Instant Match Updates
+* Dynamic Slot Tracking
 
-### 🤝 Join Matches
+### Push Notifications
 
-* Join public matches
-* Track upcoming games
-* Manage your participation history
+* Player Joined Notifications
+* Player Left Notifications
+* Match Cancellation Notifications
+* Firebase Cloud Messaging Integration
 
-### 👤 Player Profile
+### Match Categories
 
-* Personal player information
-* Location details
-* Match activity overview
+* Football
+* Cricket
+* Badminton
+* Basketball
+* Volleyball
+* Other Sports
 
----
-
-## 🎨 User Experience
-
-TurfMate is designed with a football-inspired interface featuring:
-
-* Football field themed visuals
-* Clean and modern UI
-* Smooth navigation experience
-* Mobile-first design
-* Fast and responsive interactions
-
----
-
-## 🛠️ Built With
+## 🛠️ Tech Stack
 
 ### Frontend
 
 * Flutter
-* Dart
+* Riverpod
+* Dio
+* Firebase Messaging
+* Geolocator
+* Google Fonts
 
 ### Backend
 
 * Node.js
 * Express.js
+* PostgreSQL
+* JWT Authentication
 
-### Database
+### Database & Hosting
 
 * Neon PostgreSQL
+* Render Hosting
 
-### API Architecture
+### Notifications
 
-* REST APIs
+* Firebase Cloud Messaging (FCM)
 
-### Deployment
+## 📱 Screens
 
-* Render
+* Login & Signup
+* Home Feed
+* Match Details
+* Create Match
+* My Created Matches
+* Joined Matches
+* Location Selection
 
-### Version Control
+## 🏗️ Architecture
 
-* Git & GitHub
+Frontend follows a feature-based architecture with:
 
----
+* Presentation Layer
+* Providers (Riverpod)
+* Services Layer
+* Models Layer
 
-## 🎯 Vision
+Backend follows:
 
-TurfMate aims to simplify grassroots football by creating a single platform where players can:
+* Controllers
+* Routes
+* Middleware
+* PostgreSQL Database Layer
 
-* Find games easily
-* Build local football communities
-* Organize matches efficiently
-* Stay connected with fellow players
+## 🔔 Notification System
 
----
+The application provides real-time notifications for:
 
-## 🚀 Upcoming Features
+* New players joining a match
+* Players leaving a match
+* Match cancellations
+* Important match updates
 
-* Real-time match updates
-* Team management
-* Player ratings and statistics
-* In-app chat
-* Push notifications
-* Tournament support
-* Turf booking integration
+## 🌍 Location Features
 
----
+* Automatic location detection
+* Nearby match discovery
+* Turf-based filtering
+* Location-aware recommendations
 
-## 📱 Platform
+## 📈 Future Improvements
 
-Available as an Android application.
-
----
+* In-App Chat
+* Player Ratings
+* Match History
+* Team Creation
+* Tournament Management
+* Payment Integration
+* Advanced Match Filters
 
 ## 👨‍💻 Developer
 
 **Abhinav Santhosh**
 
-B.Tech Computer Science & Engineering (CSE)
-
-Passionate about Flutter development, mobile applications, and creating solutions that bring communities together through technology.
-
----
-
-### "Find Players . Join Matches." ⚽
+Built as a full-stack mobile application using Flutter, Node.js, PostgreSQL, Firebase Cloud Messaging, and location services to simplify sports match coordination and player discovery.
