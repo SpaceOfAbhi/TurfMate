@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/core/theme/colors.dart';
+import 'package:frontend/features/home/provider/home_provider.dart';
 import 'package:frontend/features/match/presentation/create_match.dart';
 import 'package:frontend/features/match/presentation/my_matches.dart';
 import 'package:frontend/features/match/provider/my_matches_provider.dart';
@@ -90,6 +91,10 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen>
               if (index == 2) {
                 ref.refresh(myJoinedMatchesProvider);
                 ref.refresh(myCreatedMatchesProvider);
+              }
+              if (index == 0) {
+                ref.refresh(nearbyMatchesProvider);
+               
               }
             },
             tabs: [
