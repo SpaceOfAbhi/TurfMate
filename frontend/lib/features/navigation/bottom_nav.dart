@@ -73,7 +73,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen>
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: AppColors.focusColor.withOpacity(0.2),
+                color: AppColors.focusColor.withOpacity(0.15),
                 blurRadius: 35,
               ),
             ],

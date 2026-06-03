@@ -188,7 +188,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.borderColor,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -207,7 +207,7 @@ class _MatchDetailsScreenState extends State<MatchDetailsScreen> {
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: AppColors.focusColor),
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

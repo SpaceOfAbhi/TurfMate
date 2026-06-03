@@ -173,6 +173,9 @@ export const getNearbyMatches = async (req, res) => {
     });
 
   }
+  console.log("User:", req.user.userId);
+console.log("Matches from DB:", matches.length);
+console.log("Nearby after filter:", nearbyMatches.length);
 };
 
 export const joinMatch = async (req, res) => {

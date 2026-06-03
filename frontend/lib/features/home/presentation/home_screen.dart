@@ -24,7 +24,7 @@ class HomeScreen extends ConsumerWidget {
         appBar: AppBar(
           toolbarHeight: 80,
 
-          title: const AppTitle(),
+          title:  AppTitle(),
           backgroundColor: Colors.transparent,
           actions: [
             Padding(
@@ -99,169 +99,182 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
 
-        body: matchesAsync.when(
-          data: (matches) {
-            if (matches.isEmpty) {
-              return  Center(
-                child: Text(
-                  "No matches available",
-                  style: GoogleFonts.anta(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              );
-            }
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.refresh(nearbyMatchesProvider);
-              },
-              child: ListView.builder(
-                itemCount: matches.length,
-                itemBuilder: (context, index) {
-                  final match = matches[index];
-              
-                  return Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(
-                          color: AppColors.borderColor,
-                          width: 1.5,
-                        ),
-                      ),
-              
-                      clipBehavior: Clip.antiAlias,
-              
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  MatchDetailsScreen(matchId: match.id),
-                            ),
-                          );
-                        },
-              
-                        child: SizedBox(
-                          height: 180,
-              
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                height: double.infinity,
-              
-                                child: Image.asset(
-                                  'assets/sports/${match.sport.toLowerCase()}.jpg',
-              
-                                  fit: BoxFit.cover,
-              
-                                  errorBuilder: (_, __, ___) => Image.asset(
-                                    'assets/sports/default.jpg',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-              
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-              
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-              
-                                    mainAxisAlignment: MainAxisAlignment.center,
-              
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.location_on,
-                                            color: AppColors.focusColor,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Flexible(
-                                            child: Text(
-                                              "${match.turfName},${match.locationName}",
-                                              style: GoogleFonts.anta(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.date_range_rounded,
-                                            color: AppColors.focusColor,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            DateFormat(
-                                              "dd MMM yyyy, jm",
-                                            ).format(match.startTime),
-                                            style: GoogleFonts.anta(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.schedule,
-                                            color: AppColors.focusColor,
-                                          ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            DateFormat.jm().format(
-                                              match.startTime,
-                                            ),
-                                            style: GoogleFonts.anta(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-              
-                              Text(
-                                '${match.availableSlots} slots',
-                                style: GoogleFonts.anta(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.focusColor,
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
+        body: RefreshIndicator(
+          onRefresh: () async {
+            ref.refresh(nearbyMatchesProvider);
           },
-
-          loading: () => ListView.builder(
-            itemCount: 3,
-
-            itemBuilder: (_, _) => const MatchCardShimmer(),
+          child: Column(
+            children: [
+              Text(
+                    "Nearby Matches",
+                    style: GoogleFonts.anta(
+                      fontSize: 23,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+              Expanded(
+                child: matchesAsync.when(
+                  data: (matches) {
+                    if (matches.isEmpty) {
+                      return  Center(
+                        child: Text(
+                          "No matches available",
+                          style: GoogleFonts.anta(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: matches.length,
+                      itemBuilder: (context, index) {
+                        final match = matches[index];
+                    
+                        return Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(
+                                color: AppColors.borderColor,
+                                width: 1.5,
+                              ),
+                            ),
+                    
+                            clipBehavior: Clip.antiAlias,
+                    
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        MatchDetailsScreen(matchId: match.id),
+                                  ),
+                                );
+                              },
+                    
+                              child: SizedBox(
+                                height: 180,
+                    
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 120,
+                                      height: double.infinity,
+                    
+                                      child: Image.asset(
+                                        'assets/sports/${match.sport.toLowerCase()}.jpg',
+                    
+                                        fit: BoxFit.cover,
+                    
+                                        errorBuilder: (_, __, ___) => Image.asset(
+                                          'assets/sports/default.jpg',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                    
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(12),
+                    
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                    
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                    
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on,
+                                                  color: AppColors.focusColor,
+                                                ),
+                                                SizedBox(width: 5),
+                                                Flexible(
+                                                  child: Text(
+                                                    "${match.turfName},${match.locationName}",
+                                                    style: GoogleFonts.anta(
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.date_range_rounded,
+                                                  color: AppColors.focusColor,
+                                                ),
+                                                SizedBox(width: 5),
+                                                Text(
+                                                  DateFormat(
+                                                    "dd MMM yyyy, jm",
+                                                  ).format(match.startTime),
+                                                  style: GoogleFonts.anta(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.schedule,
+                                                  color: AppColors.focusColor,
+                                                ),
+                                                SizedBox(width: 5),
+                                                Text(
+                                                  DateFormat.jm().format(
+                                                    match.startTime,
+                                                  ),
+                                                  style: GoogleFonts.anta(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                    
+                                    Text(
+                                      '${match.availableSlots} slots',
+                                      style: GoogleFonts.anta(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.focusColor,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                
+                  loading: () => ListView.builder(
+                    itemCount: 3,
+                
+                    itemBuilder: (_, _) => const MatchCardShimmer(),
+                  ),
+                
+                  error: (e, _) => Center(child: Text(e.toString())),
+                ),
+              ),
+            ],
           ),
-
-          error: (e, _) => Center(child: Text(e.toString())),
         ),
       ),
     );
