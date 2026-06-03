@@ -809,11 +809,17 @@ export const deleteMatch = async (
 
       if (!player.fcm_token) continue;
 
-      await sendNotification(
+      try{await sendNotification(
         player.fcm_token,
         "⚠️ Match Cancelled",
         `${player.name}" match has been cancelled`
-      );
+      );}
+      catch (err) {
+    console.error(
+      "Notification failed:",
+      err.message
+    );
+  }
 
     }
 
